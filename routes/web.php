@@ -1,8 +1,11 @@
 <?php
 
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\ContactController;
+use App\Http\Controllers\Admin\ContactInfoController;
 use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\SiteinfoController;
+use App\Http\Controllers\Admin\SliderController;
 use App\Http\Controllers\Frontend\HomeController;
 use Illuminate\Support\Facades\Route;
 
@@ -24,8 +27,12 @@ Route::get('/dashboard', [DashboardController::class, 'index'])
     ->name('dashboard');
 
 Route::middleware('auth')->group(function () {
-    Route::get('/admin-panel/site-info', [SiteinfoController::class, 'edit'])->name('admin.siteinfo.edit');
-    Route::post('/admin-panel/site-info', [SiteinfoController::class, 'update'])->name('admin.siteinfo.update');
+    Route::get('/admin/siteinfo', [SiteinfoController::class, 'edit'])->name('admin.siteinfo.edit');
+    Route::post('/admin/siteinfo', [SiteinfoController::class, 'update'])->name('admin.siteinfo.update');
+    Route::resource('/admin/sliders', SliderController::class)->names('admin.sliders');
+    Route::get('/admin/contact-info', [ContactInfoController::class, 'edit'])->name('admin.contact-info.edit');
+    Route::post('/admin/contact-info', [ContactInfoController::class, 'update'])->name('admin.contact-info.update');
+    Route::resource('/admin/contacts', ContactController::class)->only(['index', 'show', 'update', 'destroy'])->names('admin.contacts');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

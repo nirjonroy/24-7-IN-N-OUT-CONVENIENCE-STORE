@@ -1,4 +1,4 @@
-﻿  <!--begin::Head-->
+  <!--begin::Head-->
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>@yield('title', 'Dashboard') | {{ config('app.name', 'Laravel') }}</title>
@@ -23,7 +23,7 @@
     <!--begin::Accessibility Features-->
     <!-- Skip links will be dynamically added by accessibility.js -->
     <meta name="supported-color-schemes" content="light dark" />
-    <link rel="preload" href="{{ asset('admin/css/adminlte.css') }}" as="style" />
+    <link rel="preload" href="{{ asset('admin-assets/css/adminlte.css') }}" as="style" />
     <!--end::Accessibility Features-->
     <!--begin::Fonts-->
     <link
@@ -50,7 +50,7 @@
     />
     <!--end::Third Party Plugin(Bootstrap Icons)-->
     <!--begin::Required Plugin(AdminLTE)-->
-    <link rel="stylesheet" href="{{ asset('admin/css/adminlte.css') }}" />
+    <link rel="stylesheet" href="{{ asset('admin-assets/css/adminlte.css') }}" />
     <!--end::Required Plugin(AdminLTE)-->
     <!-- apexcharts -->
     <link
