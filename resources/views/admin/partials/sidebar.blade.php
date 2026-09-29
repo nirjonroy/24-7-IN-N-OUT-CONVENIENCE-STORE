@@ -66,6 +66,12 @@
                 </a>
               </li>
               <li class="nav-item">
+                <a href="{{ route('admin.siteinfo.edit') }}" class="nav-link {{ request()->routeIs('admin.siteinfo.*') ? 'active' : '' }}">
+                  <i class="nav-icon bi bi-gear-fill"></i>
+                  <p>Site Info</p>
+                </a>
+              </li>
+              <li class="nav-item">
                 <a href="#" class="nav-link">
                   <i class="nav-icon bi bi-box-seam-fill"></i>
                   <p>
