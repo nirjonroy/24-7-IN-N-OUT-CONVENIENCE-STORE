@@ -46,6 +46,13 @@
               </li>
 
               <li class="nav-item">
+                <a href="{{ route('admin.about.edit') }}" class="nav-link {{ request()->routeIs('admin.about.*') ? 'active' : '' }}">
+                  <i class="nav-icon bi bi-info-circle-fill"></i>
+                  <p>About</p>
+                </a>
+              </li>
+
+              <li class="nav-item">
                 <a href="{{ route('admin.contact-info.edit') }}" class="nav-link {{ request()->routeIs('admin.contact-info.*') ? 'active' : '' }}">
                   <i class="nav-icon bi bi-geo-alt-fill"></i>
                   <p>Contact Info</p>

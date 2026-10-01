@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ContactController;
 use App\Http\Controllers\Admin\ContactInfoController;
+use App\Http\Controllers\Admin\AboutController;
 use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\SiteinfoController;
 use App\Http\Controllers\Admin\SliderController;
@@ -33,6 +34,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/admin/contact-info', [ContactInfoController::class, 'edit'])->name('admin.contact-info.edit');
     Route::post('/admin/contact-info', [ContactInfoController::class, 'update'])->name('admin.contact-info.update');
     Route::resource('/admin/contacts', ContactController::class)->only(['index', 'show', 'update', 'destroy'])->names('admin.contacts');
+    Route::get('/admin/about', [AboutController::class, 'edit'])->name('admin.about.edit');
+    Route::post('/admin/about', [AboutController::class, 'update'])->name('admin.about.update');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

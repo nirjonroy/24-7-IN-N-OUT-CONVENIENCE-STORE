@@ -6,7 +6,7 @@ use App\Models\Concerns\HasSeoMeta;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class ContactInfo extends Model
+class About extends Model
 {
     use HasFactory;
     use HasSeoMeta;
@@ -14,19 +14,23 @@ class ContactInfo extends Model
     protected $fillable = [
         'eyebrow',
         'title',
-        'description',
-        'address_title',
-        'address',
-        'google_map_text',
-        'google_map_url',
-        'business_details_title',
-        'business_details_description',
-        'business_profile_button_text',
-        'business_profile_url',
-        'map_embed_url',
-        'form_eyebrow',
-        'form_title',
-        'form_description',
+        'description_one',
+        'description_two',
+        'image',
+        'image_alt',
+        'button_text',
+        'button_url',
+        'identity_eyebrow',
+        'identity_title',
+        'identity_description',
+        'category_one_label',
+        'category_one_title',
+        'category_two_label',
+        'category_two_title',
+        'category_three_label',
+        'category_three_title',
+        'category_four_label',
+        'category_four_title',
         'status',
         'page_name',
         'seo_title',
