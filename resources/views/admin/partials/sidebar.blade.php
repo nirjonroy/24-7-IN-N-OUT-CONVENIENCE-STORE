@@ -65,6 +65,13 @@
                   <p>Contacts</p>
                 </a>
               </li>
+
+              <li class="nav-item">
+                <a href="{{ route('admin.businesses.index') }}" class="nav-link {{ request()->routeIs('admin.businesses.*') || request()->routeIs('admin.locations.*') ? 'active' : '' }}">
+                  <i class="nav-icon bi bi-shop"></i>
+                  <p>Business</p>
+                </a>
+              </li>
             </ul>
           </nav>
         </div>
