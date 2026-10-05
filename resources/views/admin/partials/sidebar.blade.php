@@ -100,6 +100,27 @@
                   <p>Catalog Items</p>
                 </a>
               </li>
+
+              <li class="nav-item">
+                <a href="{{ route('admin.phone-repair.services.index') }}" class="nav-link {{ request()->routeIs('admin.phone-repair.services.*') ? 'active' : '' }}">
+                  <i class="nav-icon bi bi-tools"></i>
+                  <p>Repair Services</p>
+                </a>
+              </li>
+
+              <li class="nav-item">
+                <a href="{{ route('admin.phone-repair.brands.index') }}" class="nav-link {{ request()->routeIs('admin.phone-repair.brands.*') ? 'active' : '' }}">
+                  <i class="nav-icon bi bi-phone"></i>
+                  <p>Device Brands</p>
+                </a>
+              </li>
+
+              <li class="nav-item">
+                <a href="{{ route('admin.phone-repair.models.index') }}" class="nav-link {{ request()->routeIs('admin.phone-repair.models.*') ? 'active' : '' }}">
+                  <i class="nav-icon bi bi-phone-fill"></i>
+                  <p>Device Models</p>
+                </a>
+              </li>
             </ul>
           </nav>
         </div>

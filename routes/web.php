@@ -9,11 +9,15 @@ use App\Http\Controllers\Admin\BusinessHourController;
 use App\Http\Controllers\Admin\CatalogCategoryController;
 use App\Http\Controllers\Admin\CatalogItemController;
 use App\Http\Controllers\Admin\CatalogItemVariantController;
+use App\Http\Controllers\Admin\DeviceBrandController;
+use App\Http\Controllers\Admin\DeviceModelController;
 use App\Http\Controllers\Admin\LocationController;
 use App\Http\Controllers\Admin\MediaController;
 use App\Http\Controllers\Admin\PageController;
 use App\Http\Controllers\Admin\PageSectionController;
 use App\Http\Controllers\Admin\ProfileController;
+use App\Http\Controllers\Admin\RepairServiceController;
+use App\Http\Controllers\Admin\RepairServicePriceController;
 use App\Http\Controllers\Admin\SectionItemController;
 use App\Http\Controllers\Admin\SiteinfoController;
 use App\Http\Controllers\Admin\SliderController;
@@ -78,6 +82,19 @@ Route::middleware('auth')->group(function () {
     Route::resource('/admin/catalog/items/{item}/variants', CatalogItemVariantController::class)
         ->parameters(['variants' => 'variant'])
         ->names('admin.catalog.items.variants');
+    Route::resource('/admin/phone-repair/brands', DeviceBrandController::class)
+        ->parameters(['brands' => 'brand'])
+        ->names('admin.phone-repair.brands');
+    Route::resource('/admin/phone-repair/models', DeviceModelController::class)
+        ->parameters(['models' => 'model'])
+        ->names('admin.phone-repair.models');
+    Route::resource('/admin/phone-repair/services', RepairServiceController::class)
+        ->parameters(['services' => 'service'])
+        ->names('admin.phone-repair.services');
+    Route::get('/admin/phone-repair/services/{service}/prices', [RepairServicePriceController::class, 'edit'])
+        ->name('admin.phone-repair.services.prices.edit');
+    Route::post('/admin/phone-repair/services/{service}/prices', [RepairServicePriceController::class, 'update'])
+        ->name('admin.phone-repair.services.prices.update');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
