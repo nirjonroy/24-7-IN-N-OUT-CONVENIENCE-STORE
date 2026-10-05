@@ -8,6 +8,7 @@ use App\Http\Requests\UpdateSectionItemRequest;
 use App\Models\Page;
 use App\Models\PageSection;
 use App\Models\SectionItem;
+use App\Services\MediaAttachmentService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
@@ -36,10 +37,12 @@ class SectionItemController extends Controller
         ]);
     }
 
-    public function store(StoreSectionItemRequest $request, Page $page, PageSection $section): RedirectResponse
+    public function store(StoreSectionItemRequest $request, Page $page, PageSection $section, MediaAttachmentService $mediaAttachments): RedirectResponse
     {
         $this->ensureSectionBelongsToPage($page, $section);
-        $section->items()->create($this->itemData($request->validated()));
+        [$data, $media] = $this->splitMediaData($request->validated());
+        $item = $section->items()->create($this->itemData($data));
+        $this->syncMedia($item, $mediaAttachments, $media);
 
         return redirect()->route('admin.pages.sections.items.index', [$page, $section])->with('success', 'Section item created successfully.');
     }
@@ -54,14 +57,17 @@ class SectionItemController extends Controller
     public function edit(Page $page, PageSection $section, SectionItem $item): View
     {
         $this->ensureItemContext($page, $section, $item);
+        $item->load('mediaAttachments.media.variants');
 
         return view('admin.section-items.edit', compact('page', 'section', 'item'));
     }
 
-    public function update(UpdateSectionItemRequest $request, Page $page, PageSection $section, SectionItem $item): RedirectResponse
+    public function update(UpdateSectionItemRequest $request, Page $page, PageSection $section, SectionItem $item, MediaAttachmentService $mediaAttachments): RedirectResponse
     {
         $this->ensureItemContext($page, $section, $item);
-        $item->update($this->itemData($request->validated()));
+        [$data, $media] = $this->splitMediaData($request->validated());
+        $item->update($this->itemData($data));
+        $this->syncMedia($item, $mediaAttachments, $media);
 
         return redirect()->route('admin.pages.sections.items.index', [$page, $section])->with('success', 'Section item updated successfully.');
     }
@@ -96,5 +102,31 @@ class SectionItemController extends Controller
     {
         $this->ensureSectionBelongsToPage($page, $section);
         abort_unless((int) $item->page_section_id === (int) $section->id, 404);
+    }
+
+    private function splitMediaData(array $data): array
+    {
+        $media = [
+            'image' => ['id' => $data['image_media_id'] ?? null, 'alt' => $data['image_alt_override'] ?? null],
+            'meta_image' => ['id' => $data['meta_image_media_id'] ?? null, 'alt' => $data['meta_image_alt_override'] ?? null],
+        ];
+
+        unset(
+            $data['image_media_id'],
+            $data['image_alt_override'],
+            $data['meta_image_media_id'],
+            $data['meta_image_alt_override']
+        );
+
+        return [$data, $media];
+    }
+
+    private function syncMedia(SectionItem $item, MediaAttachmentService $mediaAttachments, array $media): void
+    {
+        foreach ($media as $collection => $values) {
+            $mediaAttachments->syncSingle($item, $collection, $values['id'] ? (int) $values['id'] : null, [
+                'alt_text_override' => $values['alt'],
+            ]);
+        }
     }
 }

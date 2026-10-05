@@ -79,6 +79,27 @@
                   <p>Pages</p>
                 </a>
               </li>
+
+              <li class="nav-item">
+                <a href="{{ route('admin.media.index') }}" class="nav-link {{ request()->routeIs('admin.media.*') ? 'active' : '' }}">
+                  <i class="nav-icon bi bi-folder2-open"></i>
+                  <p>Media Library</p>
+                </a>
+              </li>
+
+              <li class="nav-item">
+                <a href="{{ route('admin.catalog.categories.index') }}" class="nav-link {{ request()->routeIs('admin.catalog.categories.*') ? 'active' : '' }}">
+                  <i class="nav-icon bi bi-tags"></i>
+                  <p>Catalog Categories</p>
+                </a>
+              </li>
+
+              <li class="nav-item">
+                <a href="{{ route('admin.catalog.items.index') }}" class="nav-link {{ request()->routeIs('admin.catalog.items.*') ? 'active' : '' }}">
+                  <i class="nav-icon bi bi-box-seam"></i>
+                  <p>Catalog Items</p>
+                </a>
+              </li>
             </ul>
           </nav>
         </div>

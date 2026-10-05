@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreBusinessRequest;
 use App\Http\Requests\UpdateBusinessRequest;
 use App\Models\Business;
+use App\Services\MediaAttachmentService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
@@ -25,9 +26,11 @@ class BusinessController extends Controller
         ]);
     }
 
-    public function store(StoreBusinessRequest $request): RedirectResponse
+    public function store(StoreBusinessRequest $request, MediaAttachmentService $mediaAttachments): RedirectResponse
     {
-        Business::create($this->validatedData($request->validated()));
+        [$data, $media] = $this->splitMediaData($request->validated());
+        $business = Business::create($this->validatedData($data));
+        $this->syncMedia($business, $mediaAttachments, $media);
 
         return redirect()->route('admin.businesses.index')->with('success', 'Business created successfully.');
     }
@@ -39,12 +42,16 @@ class BusinessController extends Controller
 
     public function edit(Business $business): View
     {
+        $business->load('mediaAttachments.media.variants');
+
         return view('admin.businesses.edit', compact('business'));
     }
 
-    public function update(UpdateBusinessRequest $request, Business $business): RedirectResponse
+    public function update(UpdateBusinessRequest $request, Business $business, MediaAttachmentService $mediaAttachments): RedirectResponse
     {
-        $business->update($this->validatedData($request->validated()));
+        [$data, $media] = $this->splitMediaData($request->validated());
+        $business->update($this->validatedData($data));
+        $this->syncMedia($business, $mediaAttachments, $media);
 
         return redirect()->route('admin.businesses.index')->with('success', 'Business updated successfully.');
     }
@@ -66,5 +73,34 @@ class BusinessController extends Controller
         $validated['is_active'] = request()->boolean('is_active');
 
         return $validated;
+    }
+
+    private function splitMediaData(array $validated): array
+    {
+        $media = [
+            'meta_image' => ['id' => $validated['meta_image_media_id'] ?? null, 'alt' => $validated['meta_image_alt_override'] ?? null],
+            'logo' => ['id' => $validated['logo_media_id'] ?? null, 'alt' => $validated['logo_alt_override'] ?? null],
+            'favicon' => ['id' => $validated['favicon_media_id'] ?? null, 'alt' => $validated['favicon_alt_override'] ?? null],
+        ];
+
+        unset(
+            $validated['meta_image_media_id'],
+            $validated['meta_image_alt_override'],
+            $validated['logo_media_id'],
+            $validated['logo_alt_override'],
+            $validated['favicon_media_id'],
+            $validated['favicon_alt_override']
+        );
+
+        return [$validated, $media];
+    }
+
+    private function syncMedia(Business $business, MediaAttachmentService $mediaAttachments, array $media): void
+    {
+        foreach ($media as $collection => $values) {
+            $mediaAttachments->syncSingle($business, $collection, $values['id'] ? (int) $values['id'] : null, [
+                'alt_text_override' => $values['alt'],
+            ]);
+        }
     }
 }

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePageRequest;
 use App\Http\Requests\UpdatePageRequest;
 use App\Models\Page;
+use App\Services\MediaAttachmentService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -36,16 +37,18 @@ class PageController extends Controller
         ]);
     }
 
-    public function store(StorePageRequest $request): RedirectResponse
+    public function store(StorePageRequest $request, MediaAttachmentService $mediaAttachments): RedirectResponse
     {
-        DB::transaction(function () use ($request) {
-            $data = $this->pageData($request->validated());
+        DB::transaction(function () use ($request, $mediaAttachments) {
+            [$data, $media] = $this->splitMediaData($request->validated());
+            $data = $this->pageData($data);
 
             if ($data['is_home']) {
                 Page::query()->update(['is_home' => false]);
             }
 
-            Page::create($data);
+            $page = Page::create($data);
+            $this->syncMedia($page, $mediaAttachments, $media);
         });
 
         return redirect()->route('admin.pages.index')->with('success', 'Page created successfully.');
@@ -58,22 +61,26 @@ class PageController extends Controller
 
     public function edit(Page $page): View
     {
+        $page->load('mediaAttachments.media.variants');
+
         return view('admin.pages.edit', [
             'page' => $page,
             'statuses' => Page::STATUSES,
         ]);
     }
 
-    public function update(UpdatePageRequest $request, Page $page): RedirectResponse
+    public function update(UpdatePageRequest $request, Page $page, MediaAttachmentService $mediaAttachments): RedirectResponse
     {
-        DB::transaction(function () use ($request, $page) {
-            $data = $this->pageData($request->validated(), $page);
+        DB::transaction(function () use ($request, $page, $mediaAttachments) {
+            [$data, $media] = $this->splitMediaData($request->validated());
+            $data = $this->pageData($data, $page);
 
             if ($data['is_home']) {
                 Page::whereKeyNot($page->id)->update(['is_home' => false]);
             }
 
             $page->update($data);
+            $this->syncMedia($page, $mediaAttachments, $media);
         });
 
         return redirect()->route('admin.pages.index')->with('success', 'Page updated successfully.');
@@ -100,5 +107,37 @@ class PageController extends Controller
         }
 
         return $data;
+    }
+
+    private function splitMediaData(array $data): array
+    {
+        $media = [
+            'meta_image' => [
+                'id' => $data['meta_image_media_id'] ?? null,
+                'alt' => $data['meta_image_alt_override'] ?? null,
+            ],
+            'og_image' => [
+                'id' => $data['og_image_media_id'] ?? null,
+                'alt' => $data['og_image_alt_override'] ?? null,
+            ],
+        ];
+
+        unset(
+            $data['meta_image_media_id'],
+            $data['meta_image_alt_override'],
+            $data['og_image_media_id'],
+            $data['og_image_alt_override']
+        );
+
+        return [$data, $media];
+    }
+
+    private function syncMedia(Page $page, MediaAttachmentService $mediaAttachments, array $media): void
+    {
+        foreach ($media as $collection => $values) {
+            $mediaAttachments->syncSingle($page, $collection, $values['id'] ? (int) $values['id'] : null, [
+                'alt_text_override' => $values['alt'],
+            ]);
+        }
     }
 }

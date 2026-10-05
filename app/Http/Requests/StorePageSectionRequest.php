@@ -45,6 +45,12 @@ class StorePageSectionRequest extends FormRequest
             'copyright' => ['nullable', 'string', 'max:255'],
             'site_name' => ['nullable', 'string', 'max:150'],
             'keywords' => ['nullable', 'string'],
+            'image_media_id' => ['nullable', 'integer', Rule::exists('media_assets', 'id')->where('is_active', true)],
+            'image_alt_override' => ['nullable', 'string', 'max:255'],
+            'background_image_media_id' => ['nullable', 'integer', Rule::exists('media_assets', 'id')->where('is_active', true)],
+            'background_image_alt_override' => ['nullable', 'string', 'max:255'],
+            'meta_image_media_id' => ['nullable', 'integer', Rule::exists('media_assets', 'id')->where('is_active', true)],
+            'meta_image_alt_override' => ['nullable', 'string', 'max:255'],
         ];
     }
 

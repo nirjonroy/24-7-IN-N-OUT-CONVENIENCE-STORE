@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreBusinessRequest extends FormRequest
 {
@@ -46,6 +47,12 @@ class StoreBusinessRequest extends FormRequest
             'copyright' => ['nullable', 'string', 'max:255'],
             'site_name' => ['nullable', 'string', 'max:150'],
             'keywords' => ['nullable', 'string'],
+            'meta_image_media_id' => ['nullable', 'integer', Rule::exists('media_assets', 'id')->where('is_active', true)],
+            'meta_image_alt_override' => ['nullable', 'string', 'max:255'],
+            'logo_media_id' => ['nullable', 'integer', Rule::exists('media_assets', 'id')->where('is_active', true)],
+            'logo_alt_override' => ['nullable', 'string', 'max:255'],
+            'favicon_media_id' => ['nullable', 'integer', Rule::exists('media_assets', 'id')->where('is_active', true)],
+            'favicon_alt_override' => ['nullable', 'string', 'max:255'],
         ];
     }
 }

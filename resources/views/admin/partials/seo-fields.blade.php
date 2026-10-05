@@ -35,6 +35,7 @@
   <div class="col-md-4 mb-3">
     <label for="meta_image" class="form-label">Meta Image</label>
     <input type="text" name="meta_image" id="meta_image" value="{{ old('meta_image', $model->meta_image ?? '') }}" class="form-control @error('meta_image') is-invalid @enderror" />
+    <div class="form-text">Legacy / external image URL fallback.</div>
     @error('meta_image')<div class="invalid-feedback">{{ $message }}</div>@enderror
   </div>
   <div class="col-md-4 mb-3">
@@ -48,6 +49,15 @@
     @error('publisher')<div class="invalid-feedback">{{ $message }}</div>@enderror
   </div>
 </div>
+@if(isset($mediaModel) && in_array('meta_image', $mediaCollections ?? [], true))
+  @include('admin.components.media-picker', [
+    'model' => $mediaModel,
+    'collection' => 'meta_image',
+    'label' => 'Meta Image Media Library',
+    'fieldName' => 'meta_image_media_id',
+    'altFieldName' => 'meta_image_alt_override',
+  ])
+@endif
 <div class="row">
   <div class="col-md-4 mb-3">
     <label for="copyright" class="form-label">Copyright</label>

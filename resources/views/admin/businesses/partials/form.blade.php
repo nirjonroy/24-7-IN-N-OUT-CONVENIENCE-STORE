@@ -16,7 +16,9 @@
     <div class="col-md-4 mb-3"><label class="form-label">Minimum Age</label><input type="number" name="minimum_age" value="{{ old('minimum_age', $business->minimum_age) }}" class="form-control" min="0" max="99" /></div>
   </div>
   <div class="mb-3"><label class="form-label">Adult Retail Notice</label><textarea name="adult_retail_notice" rows="3" class="form-control">{{ old('adult_retail_notice', $business->adult_retail_notice) }}</textarea></div>
+  @include('admin.components.media-picker', ['model' => $business, 'collection' => 'logo', 'label' => 'Logo Media Library', 'fieldName' => 'logo_media_id', 'altFieldName' => 'logo_alt_override'])
+  @include('admin.components.media-picker', ['model' => $business, 'collection' => 'favicon', 'label' => 'Favicon Media Library', 'fieldName' => 'favicon_media_id', 'altFieldName' => 'favicon_alt_override'])
   <div class="form-check form-switch mb-3"><input type="hidden" name="is_active" value="0" /><input class="form-check-input" type="checkbox" name="is_active" value="1" id="is_active" {{ old('is_active', $business->is_active) ? 'checked' : '' }} /><label class="form-check-label" for="is_active">Active</label></div>
-  @include('admin.partials.seo-fields', ['model' => $business])
+  @include('admin.partials.seo-fields', ['model' => $business, 'mediaModel' => $business, 'mediaCollections' => ['meta_image']])
 </div>
 <div class="card-footer d-flex gap-2"><button class="btn btn-primary">Save Business</button><a href="{{ route('admin.businesses.index') }}" class="btn btn-secondary">Cancel</a></div>

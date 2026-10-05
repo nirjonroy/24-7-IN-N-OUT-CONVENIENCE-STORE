@@ -20,10 +20,12 @@
     <div class="col-md-4 mb-3"><label class="form-label">Image Alt</label><input name="image_alt" value="{{ old('image_alt', $item->image_alt) }}" class="form-control" /></div>
     <div class="col-md-4 mb-3"><label class="form-label">Settings JSON</label><textarea name="settings" rows="1" class="form-control @error('settings') is-invalid @enderror">{{ $settingsValue }}</textarea>@error('settings')<div class="invalid-feedback">{{ $message }}</div>@enderror</div>
   </div>
+  <div class="form-text mb-3">Image path fields above remain as legacy / external URL fallbacks.</div>
+  @include('admin.components.media-picker', ['model' => $item, 'collection' => 'image', 'label' => 'Item Image Media Library', 'fieldName' => 'image_media_id', 'altFieldName' => 'image_alt_override'])
   <div class="row">
     <div class="col-md-6 mb-3"><label class="form-label">Button Label</label><input name="button_label" value="{{ old('button_label', $item->button_label) }}" class="form-control" /></div>
     <div class="col-md-6 mb-3"><label class="form-label">Button URL</label><input name="button_url" value="{{ old('button_url', $item->button_url) }}" class="form-control" /></div>
   </div>
-  @include('admin.partials.seo-fields', ['model' => $item])
+  @include('admin.partials.seo-fields', ['model' => $item, 'mediaModel' => $item, 'mediaCollections' => ['meta_image']])
 </div>
 <div class="card-footer d-flex gap-2"><button class="btn btn-primary">Save Item</button><a href="{{ route('admin.pages.sections.items.index', [$page, $section]) }}" class="btn btn-secondary">Cancel</a></div>

@@ -38,6 +38,130 @@
       });
     </script>
     <!--end::OverlayScrollbars Configure-->
+    <div class="modal fade" id="mediaPickerModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Choose Media</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div class="input-group mb-3">
+              <input type="search" class="form-control" id="mediaPickerSearch" placeholder="Search media">
+              <button class="btn btn-outline-secondary" type="button" id="mediaPickerSearchBtn">Search</button>
+            </div>
+            <div id="mediaPickerResults"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        let activePicker = null;
+        let activeGallery = null;
+        const modalElement = document.getElementById('mediaPickerModal');
+        const resultsElement = document.getElementById('mediaPickerResults');
+        const searchInput = document.getElementById('mediaPickerSearch');
+        const searchButton = document.getElementById('mediaPickerSearchBtn');
+        const modal = modalElement ? new bootstrap.Modal(modalElement) : null;
+
+        function loadMedia(search = '') {
+          if (!activePicker || !resultsElement) return;
+          const endpoint = new URL(activePicker.dataset.pickerEndpoint, window.location.origin);
+          if (search) endpoint.searchParams.set('search', search);
+          fetch(endpoint.toString(), { headers: { 'Accept': 'application/json' } })
+            .then((response) => response.json())
+            .then((data) => { resultsElement.innerHTML = data.html; });
+        }
+
+        document.querySelectorAll('[data-media-picker]').forEach(function (picker) {
+          const input = picker.querySelector('[data-media-picker-input]');
+          const preview = picker.querySelector('[data-media-picker-preview]');
+          const empty = picker.querySelector('[data-media-picker-empty]');
+
+          picker.querySelector('[data-media-picker-open]')?.addEventListener('click', function () {
+            activePicker = picker;
+            activeGallery = null;
+            if (searchInput) searchInput.value = '';
+            loadMedia();
+            modal?.show();
+          });
+
+          picker.querySelector('[data-media-picker-remove]')?.addEventListener('click', function () {
+            input.value = '';
+            preview.src = '';
+            preview.classList.add('d-none');
+            empty.classList.remove('d-none');
+          });
+        });
+
+        function syncGalleryInput(gallery) {
+          const ids = Array.from(gallery.querySelectorAll('[data-media-gallery-item]')).map((item) => item.dataset.mediaId);
+          gallery.querySelector('[data-media-gallery-input]').value = ids.join(',');
+        }
+
+        document.querySelectorAll('[data-media-gallery]').forEach(function (gallery) {
+          gallery.querySelector('[data-media-gallery-open]')?.addEventListener('click', function () {
+            activeGallery = gallery;
+            activePicker = null;
+            if (searchInput) searchInput.value = '';
+            const endpoint = new URL(gallery.dataset.pickerEndpoint, window.location.origin);
+            fetch(endpoint.toString(), { headers: { 'Accept': 'application/json' } })
+              .then((response) => response.json())
+              .then((data) => { resultsElement.innerHTML = data.html; });
+            modal?.show();
+          });
+
+          gallery.addEventListener('click', function (event) {
+            const remove = event.target.closest('[data-media-gallery-remove]');
+            if (!remove) return;
+            remove.closest('[data-media-gallery-item]').remove();
+            syncGalleryInput(gallery);
+          });
+        });
+
+        searchButton?.addEventListener('click', function () {
+          loadMedia(searchInput.value);
+        });
+
+        searchInput?.addEventListener('keydown', function (event) {
+          if (event.key === 'Enter') {
+            event.preventDefault();
+            loadMedia(searchInput.value);
+          }
+        });
+
+        resultsElement?.addEventListener('click', function (event) {
+          const button = event.target.closest('.media-picker-select');
+          if (!button) return;
+          if (activeGallery) {
+            const list = activeGallery.querySelector('[data-media-gallery-list]');
+            if (!list.querySelector(`[data-media-id="${button.dataset.mediaId}"]`)) {
+              const wrapper = document.createElement('div');
+              wrapper.className = 'position-relative border rounded p-1';
+              wrapper.dataset.mediaGalleryItem = '';
+              wrapper.dataset.mediaId = button.dataset.mediaId;
+              wrapper.innerHTML = `<img src="${button.dataset.mediaUrl}" alt="" style="width:90px;height:70px;object-fit:cover" loading="lazy"><button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0 py-0 px-1" data-media-gallery-remove>&times;</button>`;
+              list.appendChild(wrapper);
+              syncGalleryInput(activeGallery);
+            }
+            activeGallery = null;
+            modal?.hide();
+            return;
+          }
+          if (!activePicker) return;
+          const input = activePicker.querySelector('[data-media-picker-input]');
+          const preview = activePicker.querySelector('[data-media-picker-preview]');
+          const empty = activePicker.querySelector('[data-media-picker-empty]');
+          input.value = button.dataset.mediaId;
+          preview.src = button.dataset.mediaUrl;
+          preview.classList.remove('d-none');
+          empty.classList.add('d-none');
+          activePicker = null;
+          modal?.hide();
+        });
+      });
+    </script>
     <!-- OPTIONAL SCRIPTS -->
     <!-- sortablejs -->
     <script

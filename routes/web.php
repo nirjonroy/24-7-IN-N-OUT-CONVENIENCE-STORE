@@ -6,7 +6,11 @@ use App\Http\Controllers\Admin\ContactInfoController;
 use App\Http\Controllers\Admin\AboutController;
 use App\Http\Controllers\Admin\BusinessController;
 use App\Http\Controllers\Admin\BusinessHourController;
+use App\Http\Controllers\Admin\CatalogCategoryController;
+use App\Http\Controllers\Admin\CatalogItemController;
+use App\Http\Controllers\Admin\CatalogItemVariantController;
 use App\Http\Controllers\Admin\LocationController;
+use App\Http\Controllers\Admin\MediaController;
 use App\Http\Controllers\Admin\PageController;
 use App\Http\Controllers\Admin\PageSectionController;
 use App\Http\Controllers\Admin\ProfileController;
@@ -56,6 +60,8 @@ Route::middleware('auth')->group(function () {
         ->except(['show'])
         ->parameters(['social-links' => 'socialLink'])
         ->names('admin.businesses.social-links');
+    Route::get('/admin/media/picker', [MediaController::class, 'picker'])->name('admin.media.picker');
+    Route::resource('/admin/media', MediaController::class)->parameters(['media' => 'medium'])->names('admin.media');
     Route::resource('/admin/pages', PageController::class)->names('admin.pages');
     Route::resource('/admin/pages/{page}/sections', PageSectionController::class)
         ->parameters(['sections' => 'section'])
@@ -63,6 +69,15 @@ Route::middleware('auth')->group(function () {
     Route::resource('/admin/pages/{page}/sections/{section}/items', SectionItemController::class)
         ->parameters(['items' => 'item'])
         ->names('admin.pages.sections.items');
+    Route::resource('/admin/catalog/categories', CatalogCategoryController::class)
+        ->parameters(['categories' => 'category'])
+        ->names('admin.catalog.categories');
+    Route::resource('/admin/catalog/items', CatalogItemController::class)
+        ->parameters(['items' => 'item'])
+        ->names('admin.catalog.items');
+    Route::resource('/admin/catalog/items/{item}/variants', CatalogItemVariantController::class)
+        ->parameters(['variants' => 'variant'])
+        ->names('admin.catalog.items.variants');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

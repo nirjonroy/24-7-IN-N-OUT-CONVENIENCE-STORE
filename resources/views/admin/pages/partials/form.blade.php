@@ -20,13 +20,20 @@
     <div class="col-md-4 mb-3"><div class="form-check form-switch"><input type="hidden" name="robots_index" value="0" /><input class="form-check-input" type="checkbox" name="robots_index" value="1" id="robots_index" {{ old('robots_index', $page->robots_index ?? true) ? 'checked' : '' }} /><label class="form-check-label" for="robots_index">Robots Index</label></div></div>
     <div class="col-md-4 mb-3"><div class="form-check form-switch"><input type="hidden" name="robots_follow" value="0" /><input class="form-check-input" type="checkbox" name="robots_follow" value="1" id="robots_follow" {{ old('robots_follow', $page->robots_follow ?? true) ? 'checked' : '' }} /><label class="form-check-label" for="robots_follow">Robots Follow</label></div></div>
   </div>
-  @include('admin.partials.seo-fields', ['model' => $page])
+  @include('admin.partials.seo-fields', ['model' => $page, 'mediaModel' => $page, 'mediaCollections' => ['meta_image']])
   <hr />
   <h5>Advanced SEO</h5>
   <div class="row">
     <div class="col-md-6 mb-3"><label class="form-label">Canonical URL</label><input name="canonical_url" value="{{ old('canonical_url', $page->canonical_url) }}" class="form-control @error('canonical_url') is-invalid @enderror" />@error('canonical_url')<div class="invalid-feedback">{{ $message }}</div>@enderror</div>
-    <div class="col-md-6 mb-3"><label class="form-label">Open Graph Image</label><input name="og_image" value="{{ old('og_image', $page->og_image) }}" class="form-control" /></div>
+    <div class="col-md-6 mb-3"><label class="form-label">Open Graph Image</label><input name="og_image" value="{{ old('og_image', $page->og_image) }}" class="form-control" /><div class="form-text">Legacy / external image URL fallback.</div></div>
   </div>
+  @include('admin.components.media-picker', [
+    'model' => $page,
+    'collection' => 'og_image',
+    'label' => 'Open Graph Image Media Library',
+    'fieldName' => 'og_image_media_id',
+    'altFieldName' => 'og_image_alt_override',
+  ])
   <div class="row">
     <div class="col-md-6 mb-3"><label class="form-label">Open Graph Title</label><input name="og_title" value="{{ old('og_title', $page->og_title) }}" class="form-control" /></div>
     <div class="col-md-6 mb-3"><label class="form-label">Open Graph Description</label><textarea name="og_description" rows="2" class="form-control">{{ old('og_description', $page->og_description) }}</textarea></div>
