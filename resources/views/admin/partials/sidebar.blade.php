@@ -102,6 +102,34 @@
               </li>
 
               <li class="nav-item">
+                <a href="{{ route('admin.faq.categories.index') }}" class="nav-link {{ request()->routeIs('admin.faq.categories.*') ? 'active' : '' }}">
+                  <i class="nav-icon bi bi-question-circle"></i>
+                  <p>FAQ Categories</p>
+                </a>
+              </li>
+
+              <li class="nav-item">
+                <a href="{{ route('admin.faq.questions.index') }}" class="nav-link {{ request()->routeIs('admin.faq.questions.*') ? 'active' : '' }}">
+                  <i class="nav-icon bi bi-chat-left-text"></i>
+                  <p>FAQs</p>
+                </a>
+              </li>
+
+              <li class="nav-item">
+                <a href="{{ route('admin.gallery.categories.index') }}" class="nav-link {{ request()->routeIs('admin.gallery.categories.*') ? 'active' : '' }}">
+                  <i class="nav-icon bi bi-collection"></i>
+                  <p>Gallery Categories</p>
+                </a>
+              </li>
+
+              <li class="nav-item">
+                <a href="{{ route('admin.gallery.items.index') }}" class="nav-link {{ request()->routeIs('admin.gallery.items.*') ? 'active' : '' }}">
+                  <i class="nav-icon bi bi-image"></i>
+                  <p>Gallery Items</p>
+                </a>
+              </li>
+
+              <li class="nav-item">
                 <a href="{{ route('admin.phone-repair.services.index') }}" class="nav-link {{ request()->routeIs('admin.phone-repair.services.*') ? 'active' : '' }}">
                   <i class="nav-icon bi bi-tools"></i>
                   <p>Repair Services</p>

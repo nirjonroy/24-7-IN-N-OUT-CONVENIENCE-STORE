@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Page extends Model
@@ -53,6 +54,11 @@ class Page extends Model
     public function sections(): HasMany
     {
         return $this->hasMany(PageSection::class)->orderBy('sort_order')->orderBy('id');
+    }
+
+    public function faqs(): BelongsToMany
+    {
+        return $this->belongsToMany(Faq::class, 'faq_page')->withPivot('sort_order')->withTimestamps();
     }
 
     public function scopePublished(Builder $query): Builder

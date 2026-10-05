@@ -11,6 +11,10 @@ use App\Http\Controllers\Admin\CatalogItemController;
 use App\Http\Controllers\Admin\CatalogItemVariantController;
 use App\Http\Controllers\Admin\DeviceBrandController;
 use App\Http\Controllers\Admin\DeviceModelController;
+use App\Http\Controllers\Admin\FaqCategoryController;
+use App\Http\Controllers\Admin\FaqController;
+use App\Http\Controllers\Admin\GalleryCategoryController;
+use App\Http\Controllers\Admin\GalleryItemController;
 use App\Http\Controllers\Admin\LocationController;
 use App\Http\Controllers\Admin\MediaController;
 use App\Http\Controllers\Admin\PageController;
@@ -82,6 +86,18 @@ Route::middleware('auth')->group(function () {
     Route::resource('/admin/catalog/items/{item}/variants', CatalogItemVariantController::class)
         ->parameters(['variants' => 'variant'])
         ->names('admin.catalog.items.variants');
+    Route::resource('/admin/faq/categories', FaqCategoryController::class)
+        ->parameters(['categories' => 'category'])
+        ->names('admin.faq.categories');
+    Route::resource('/admin/faq/questions', FaqController::class)
+        ->parameters(['questions' => 'question'])
+        ->names('admin.faq.questions');
+    Route::resource('/admin/gallery/categories', GalleryCategoryController::class)
+        ->parameters(['categories' => 'category'])
+        ->names('admin.gallery.categories');
+    Route::resource('/admin/gallery/items', GalleryItemController::class)
+        ->parameters(['items' => 'item'])
+        ->names('admin.gallery.items');
     Route::resource('/admin/phone-repair/brands', DeviceBrandController::class)
         ->parameters(['brands' => 'brand'])
         ->names('admin.phone-repair.brands');
