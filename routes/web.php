@@ -17,17 +17,24 @@ use App\Http\Controllers\Admin\GalleryCategoryController;
 use App\Http\Controllers\Admin\GalleryItemController;
 use App\Http\Controllers\Admin\LocationController;
 use App\Http\Controllers\Admin\MediaController;
+use App\Http\Controllers\Admin\MenuController;
+use App\Http\Controllers\Admin\MenuItemController;
 use App\Http\Controllers\Admin\PageController;
 use App\Http\Controllers\Admin\PageSectionController;
 use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\RepairServiceController;
 use App\Http\Controllers\Admin\RepairServicePriceController;
+use App\Http\Controllers\Admin\RedirectController;
+use App\Http\Controllers\Admin\ReviewController;
 use App\Http\Controllers\Admin\SectionItemController;
+use App\Http\Controllers\Admin\SeoSettingController;
 use App\Http\Controllers\Admin\SiteinfoController;
 use App\Http\Controllers\Admin\SliderController;
 use App\Http\Controllers\Admin\SocialLinkController;
 use App\Http\Controllers\Admin\SpecialBusinessHourController;
 use App\Http\Controllers\Frontend\HomeController;
+use App\Http\Controllers\Frontend\RobotsController;
+use App\Http\Controllers\Frontend\SitemapController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -41,6 +48,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::get('/sitemap.xml', SitemapController::class)->name('sitemap.xml');
+Route::get('/robots.txt', RobotsController::class)->name('robots.txt');
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
 Route::get('/dashboard', [DashboardController::class, 'index'])
@@ -70,6 +79,16 @@ Route::middleware('auth')->group(function () {
         ->names('admin.businesses.social-links');
     Route::get('/admin/media/picker', [MediaController::class, 'picker'])->name('admin.media.picker');
     Route::resource('/admin/media', MediaController::class)->parameters(['media' => 'medium'])->names('admin.media');
+    Route::get('/admin/seo/settings', [SeoSettingController::class, 'edit'])->name('admin.seo.settings.edit');
+    Route::match(['put', 'patch'], '/admin/seo/settings', [SeoSettingController::class, 'update'])->name('admin.seo.settings.update');
+    Route::resource('/admin/seo/redirects', RedirectController::class)
+        ->parameters(['redirects' => 'redirect'])
+        ->names('admin.seo.redirects');
+    Route::resource('/admin/reviews', ReviewController::class)->names('admin.reviews');
+    Route::resource('/admin/menus', MenuController::class)->names('admin.menus');
+    Route::resource('/admin/menus/{menu}/items', MenuItemController::class)
+        ->parameters(['items' => 'item'])
+        ->names('admin.menus.items');
     Route::resource('/admin/pages', PageController::class)->names('admin.pages');
     Route::resource('/admin/pages/{page}/sections', PageSectionController::class)
         ->parameters(['sections' => 'section'])

@@ -88,6 +88,34 @@
               </li>
 
               <li class="nav-item">
+                <a href="{{ route('admin.reviews.index') }}" class="nav-link {{ request()->routeIs('admin.reviews.*') ? 'active' : '' }}">
+                  <i class="nav-icon bi bi-star-half"></i>
+                  <p>Reviews</p>
+                </a>
+              </li>
+
+              <li class="nav-item">
+                <a href="{{ route('admin.menus.index') }}" class="nav-link {{ request()->routeIs('admin.menus.*') ? 'active' : '' }}">
+                  <i class="nav-icon bi bi-list-nested"></i>
+                  <p>Menus</p>
+                </a>
+              </li>
+
+              <li class="nav-item">
+                <a href="{{ route('admin.seo.settings.edit') }}" class="nav-link {{ request()->routeIs('admin.seo.settings.*') ? 'active' : '' }}">
+                  <i class="nav-icon bi bi-search"></i>
+                  <p>SEO Settings</p>
+                </a>
+              </li>
+
+              <li class="nav-item">
+                <a href="{{ route('admin.seo.redirects.index') }}" class="nav-link {{ request()->routeIs('admin.seo.redirects.*') ? 'active' : '' }}">
+                  <i class="nav-icon bi bi-arrow-right-circle"></i>
+                  <p>Redirects</p>
+                </a>
+              </li>
+
+              <li class="nav-item">
                 <a href="{{ route('admin.catalog.categories.index') }}" class="nav-link {{ request()->routeIs('admin.catalog.categories.*') ? 'active' : '' }}">
                   <i class="nav-icon bi bi-tags"></i>
                   <p>Catalog Categories</p>

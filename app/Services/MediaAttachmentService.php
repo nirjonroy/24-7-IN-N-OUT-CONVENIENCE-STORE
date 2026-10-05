@@ -10,7 +10,7 @@ use Illuminate\Validation\ValidationException;
 class MediaAttachmentService
 {
     public const SINGLE_COLLECTIONS = [
-        'meta_image', 'og_image', 'image', 'background_image', 'logo', 'favicon',
+        'meta_image', 'og_image', 'image', 'background_image', 'logo', 'favicon', 'avatar', 'default_meta_image',
     ];
 
     public function syncSingle(Model $model, string $collection, ?int $mediaAssetId, array $overrides = []): void

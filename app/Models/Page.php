@@ -47,6 +47,7 @@ class Page extends Model
     protected static function booted(): void
     {
         static::deleting(function (Page $page) {
+            $page->menuItems()->update(['page_id' => null]);
             $page->sections()->get()->each->delete();
         });
     }
@@ -59,6 +60,11 @@ class Page extends Model
     public function faqs(): BelongsToMany
     {
         return $this->belongsToMany(Faq::class, 'faq_page')->withPivot('sort_order')->withTimestamps();
+    }
+
+    public function menuItems(): HasMany
+    {
+        return $this->hasMany(MenuItem::class);
     }
 
     public function scopePublished(Builder $query): Builder

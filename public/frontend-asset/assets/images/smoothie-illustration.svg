@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 480" role="img" aria-labelledby="title desc">
+  <title id="title">Smoothie illustration</title>
+  <desc id="desc">A bright fruit smoothie with berries, mango and a straw.</desc>
+  <rect width="720" height="480" rx="36" fill="#fef2f2"/>
+  <circle cx="173" cy="126" r="56" fill="#fbbf24"/><circle cx="548" cy="128" r="50" fill="#fb7185"/><circle cx="594" cy="202" r="28" fill="#34d399"/>
+  <path d="M320 70h24l72 100-22 16z" fill="#0f172a"/>
+  <path d="M257 153h220l-31 240c-3 25-24 43-49 43h-60c-25 0-46-18-49-43z" fill="#ffffff" stroke="#fecaca" stroke-width="8"/>
+  <path d="M277 207h179l-24 167c-2 15-14 26-29 26h-72c-15 0-28-11-30-26z" fill="#ef4444"/>
+  <path d="M293 235c53-25 105-24 151 0" fill="none" stroke="#fb7185" stroke-width="18" stroke-linecap="round"/>
+  <circle cx="323" cy="285" r="17" fill="#7f1d1d"/><circle cx="386" cy="317" r="19" fill="#fbbf24"/><circle cx="356" cy="352" r="14" fill="#14532d"/>
+  <path d="M202 324c30-58 83-81 118-61-20 52-64 91-118 61z" fill="#22c55e"/>
+</svg>

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 480" role="img" aria-labelledby="title desc">
+  <title id="title">Adult 21 plus retail illustration</title>
+  <desc id="desc">A neutral age verification card displaying 21 plus.</desc>
+  <rect width="720" height="480" rx="36" fill="#f8fafc"/>
+  <rect x="108" y="84" width="504" height="312" rx="30" fill="#ffffff" stroke="#cbd5e1" stroke-width="8"/>
+  <circle cx="245" cy="240" r="88" fill="#b91c1c"/>
+  <text x="245" y="265" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="72" font-weight="800" fill="#fff">21+</text>
+  <rect x="370" y="156" width="162" height="24" rx="12" fill="#0f172a"/>
+  <rect x="370" y="201" width="130" height="18" rx="9" fill="#94a3b8"/>
+  <rect x="370" y="236" width="174" height="18" rx="9" fill="#94a3b8"/>
+  <rect x="370" y="291" width="150" height="48" rx="14" fill="#fbbf24"/>
+</svg>
