@@ -30,10 +30,16 @@ class SeoSetting extends Model
         'structured_data_enabled' => 'boolean',
     ];
 
+    protected static function booted(): void
+    {
+        static::saved(fn () => self::clearCache());
+        static::deleted(fn () => self::clearCache());
+    }
+
     public static function current(): self
     {
         return Cache::remember(self::CACHE_KEY, now()->addMinutes(30), function () {
-            return self::query()->firstOrCreate([], [
+            return self::query()->latest('id')->first() ?: self::query()->create([
                 'site_name' => '24/7 IN N OUT CONVENIENCE STORE',
                 'title_separator' => '|',
                 'twitter_card' => 'summary_large_image',
