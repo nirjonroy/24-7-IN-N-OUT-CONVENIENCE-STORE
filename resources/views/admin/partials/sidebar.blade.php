@@ -72,6 +72,13 @@
                   <p>Business</p>
                 </a>
               </li>
+
+              <li class="nav-item">
+                <a href="{{ route('admin.pages.index') }}" class="nav-link {{ request()->routeIs('admin.pages.*') ? 'active' : '' }}">
+                  <i class="nav-icon bi bi-file-earmark-text"></i>
+                  <p>Pages</p>
+                </a>
+              </li>
             </ul>
           </nav>
         </div>

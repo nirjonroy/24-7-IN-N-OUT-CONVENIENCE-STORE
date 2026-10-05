@@ -7,7 +7,10 @@ use App\Http\Controllers\Admin\AboutController;
 use App\Http\Controllers\Admin\BusinessController;
 use App\Http\Controllers\Admin\BusinessHourController;
 use App\Http\Controllers\Admin\LocationController;
+use App\Http\Controllers\Admin\PageController;
+use App\Http\Controllers\Admin\PageSectionController;
 use App\Http\Controllers\Admin\ProfileController;
+use App\Http\Controllers\Admin\SectionItemController;
 use App\Http\Controllers\Admin\SiteinfoController;
 use App\Http\Controllers\Admin\SliderController;
 use App\Http\Controllers\Admin\SocialLinkController;
@@ -53,6 +56,13 @@ Route::middleware('auth')->group(function () {
         ->except(['show'])
         ->parameters(['social-links' => 'socialLink'])
         ->names('admin.businesses.social-links');
+    Route::resource('/admin/pages', PageController::class)->names('admin.pages');
+    Route::resource('/admin/pages/{page}/sections', PageSectionController::class)
+        ->parameters(['sections' => 'section'])
+        ->names('admin.pages.sections');
+    Route::resource('/admin/pages/{page}/sections/{section}/items', SectionItemController::class)
+        ->parameters(['items' => 'item'])
+        ->names('admin.pages.sections.items');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

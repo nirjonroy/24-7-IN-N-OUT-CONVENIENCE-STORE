@@ -1,0 +1,58 @@
+<?php
+
+namespace App\Http\Requests;
+
+use App\Models\Page;
+use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
+
+class StorePageRequest extends FormRequest
+{
+    public function authorize(): bool
+    {
+        return true;
+    }
+
+    public function rules(): array
+    {
+        return [
+            'name' => ['required', 'string', 'max:150'],
+            'slug' => ['nullable', 'string', 'max:180', Rule::unique('pages', 'slug')],
+            'route_name' => ['nullable', 'string', 'max:150'],
+            'template' => ['required', 'string', 'max:100'],
+            'h1' => ['required', 'string', 'max:255'],
+            'intro_text' => ['nullable', 'string'],
+            'canonical_url' => ['nullable', 'url', 'max:500'],
+            'og_title' => ['nullable', 'string', 'max:255'],
+            'og_description' => ['nullable', 'string'],
+            'og_image' => ['nullable', 'string', 'max:500'],
+            'robots_index' => ['nullable', 'boolean'],
+            'robots_follow' => ['nullable', 'boolean'],
+            'is_home' => ['nullable', 'boolean'],
+            'status' => ['required', Rule::in(Page::STATUSES)],
+            'sort_order' => ['nullable', 'integer', 'min:0'],
+            'published_at' => ['nullable', 'date'],
+            'page_name' => ['nullable', 'string', 'max:150'],
+            'seo_title' => ['nullable', 'string', 'max:255'],
+            'seo_description' => ['nullable', 'string'],
+            'meta_title' => ['nullable', 'string', 'max:255'],
+            'meta_description' => ['nullable', 'string'],
+            'meta_image' => ['nullable', 'string', 'max:500'],
+            'author' => ['nullable', 'string', 'max:150'],
+            'publisher' => ['nullable', 'string', 'max:150'],
+            'copyright' => ['nullable', 'string', 'max:255'],
+            'site_name' => ['nullable', 'string', 'max:150'],
+            'keywords' => ['nullable', 'string'],
+        ];
+    }
+
+    protected function prepareForValidation(): void
+    {
+        $slugSource = $this->input('slug') ?: $this->input('name');
+
+        if ($slugSource) {
+            $this->merge(['slug' => Str::slug($slugSource)]);
+        }
+    }
+}
