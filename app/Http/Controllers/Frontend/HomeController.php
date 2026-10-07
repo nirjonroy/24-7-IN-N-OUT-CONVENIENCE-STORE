@@ -9,6 +9,7 @@ use App\Models\MenuItem;
 use App\Models\Page;
 use App\Models\Review;
 use App\Models\SeoSetting;
+use App\Services\HomeFallbackService;
 use App\Services\PageUrlService;
 use App\Services\SeoService;
 use App\Services\StructuredDataService;
@@ -23,9 +24,11 @@ class HomeController extends Controller
         Request $request,
         SeoService $seoService,
         StructuredDataService $structuredDataService,
-        PageUrlService $pageUrlService
+        PageUrlService $pageUrlService,
+        HomeFallbackService $homeFallbackService
     ): View
     {
+        $fallback = $homeFallbackService->data();
         $page = Page::published()
             ->where('is_home', true)
             ->with([
@@ -62,7 +65,12 @@ class HomeController extends Controller
             'footer_primary' => $this->menu('footer_primary', $pageUrlService),
             'footer_secondary' => $this->menu('footer_secondary', $pageUrlService),
         ];
-        $menus['mobile'] = $menus['mobile']->isNotEmpty() ? $menus['mobile'] : $menus['header'];
+        $menus['header'] = $menus['header']->isNotEmpty() ? $menus['header'] : collect($fallback['nav']);
+        $menus['mobile'] = $menus['mobile']->isNotEmpty()
+            ? $menus['mobile']
+            : ($this->menu('header', $pageUrlService)->isNotEmpty() ? $menus['header'] : collect([...$fallback['nav'], ...$fallback['mobile_nav_extra']]));
+        $menus['footer_primary'] = $menus['footer_primary']->isNotEmpty() ? $menus['footer_primary'] : collect($fallback['footer_primary']);
+        $menus['footer_secondary'] = $menus['footer_secondary']->isNotEmpty() ? $menus['footer_secondary'] : collect($fallback['footer_secondary']);
 
         $reviews = Review::active()
             ->featured()
@@ -97,14 +105,15 @@ class HomeController extends Controller
         return view('frontend.home', [
             'page' => $page,
             'sections' => $this->sections($page),
-            'business' => $this->businessData($business, $pageUrlService),
-            'location' => $this->locationData($location, $pageUrlService),
+            'business' => $this->businessData($business, $pageUrlService, $fallback),
+            'location' => $this->locationData($location, $pageUrlService, $fallback),
             'menus' => $menus,
             'reviews' => $reviews,
             'seo' => $seo,
             'seoSettings' => $settings,
             'structuredData' => $structuredData,
             'assetsBase' => asset('frontend-asset'),
+            'fallback' => $fallback,
         ]);
     }
 
@@ -181,15 +190,15 @@ class HomeController extends Controller
             ->values() ?: collect();
     }
 
-    private function businessData(?Business $business, PageUrlService $pageUrlService): array
+    private function businessData(?Business $business, PageUrlService $pageUrlService, array $fallback): array
     {
         return [
-            'name' => $business?->name ?: '24/7 IN N OUT',
-            'short_name' => $business?->short_name ?: '24/7 IN N OUT',
-            'tagline' => $business?->tagline ?: 'Oxon Hill, Maryland',
-            'description' => $business?->description ?: 'A local Oxon Hill business bringing convenience-store shopping, phone repair, smoothies and adult-only vape/tobacco retail together at one address.',
-            'logo' => $business ? $this->mediaUrl($business, 'logo', asset('frontend-asset/assets/images/logo-mark.svg')) : asset('frontend-asset/assets/images/logo-mark.svg'),
-            'adult_notice' => $business?->adult_retail_notice ?: 'Adult vape/tobacco products: 21+ only. Valid ID requirements apply.',
+            'name' => $business?->name ?: $fallback['brand']['name'],
+            'short_name' => $business?->short_name ?: $fallback['brand']['short_name'],
+            'tagline' => $business?->tagline ?: $fallback['brand']['tagline'],
+            'description' => $business?->description ?: $fallback['brand']['description'],
+            'logo' => $business ? $this->mediaUrl($business, 'logo', $fallback['brand']['logo']) : $fallback['brand']['logo'],
+            'adult_notice' => $business?->adult_retail_notice ?: $fallback['brand']['adult_notice'],
             'minimum_age' => $business?->minimum_age,
             'social_links' => $business?->socialLinks->map(fn ($link) => [
                 'label' => $link->label ?: ucfirst($link->platform),
@@ -199,16 +208,18 @@ class HomeController extends Controller
         ];
     }
 
-    private function locationData($location, PageUrlService $pageUrlService): array
+    private function locationData($location, PageUrlService $pageUrlService, array $fallback): array
     {
         $address = $location
             ? collect([$location->address_line_1, $location->address_line_2, $location->city, $location->state, $location->postal_code])->filter()->implode(', ')
-            : '6168 Oxon Hill Rd, Oxon Hill, MD 20745';
-        $mapUrl = $location?->directions_url ?: $location?->google_maps_url ?: 'https://www.google.com/maps/search/?api=1&query='.rawurlencode($address);
+            : $fallback['location']['address'];
+        $mapUrl = $location?->directions_url ?: $location?->google_maps_url ?: $fallback['location']['map_url'];
 
         return [
-            'name' => $location?->name ?: 'Oxon Hill Store',
+            'name' => $location?->name ?: $fallback['location']['name'],
             'address' => $address,
+            'city_line' => $location ? collect([$location->city, trim(($location->state ?: '').' '.($location->postal_code ?: ''))])->filter()->implode(', ') : $fallback['location']['city_line'],
+            'badge' => $location ? collect([$location->city, $location->state])->filter()->implode(', ') : $fallback['location']['badge'],
             'phone' => $location?->phone,
             'email' => $location?->email,
             'map_url' => $pageUrlService->safe($mapUrl),

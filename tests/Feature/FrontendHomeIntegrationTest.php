@@ -5,6 +5,8 @@ namespace Tests\Feature;
 use App\Models\Business;
 use App\Models\BusinessHour;
 use App\Models\Location;
+use App\Models\MediaAsset;
+use App\Models\MediaAttachment;
 use App\Models\Menu;
 use App\Models\MenuItem;
 use App\Models\Page;
@@ -131,6 +133,8 @@ class FrontendHomeIntegrationTest extends TestCase
             ->assertSee('CMS Home Heading')
             ->assertSee('Hero dynamic copy.')
             ->assertSee('Dynamic services')
+            ->assertSee('Convenience • Repair • Smoothies • 21+ retail')
+            ->assertSee('storefront-google.webp')
             ->assertSee('Phone Repair')
             ->assertSee('Unknown Section Works')
             ->assertSee('24/7 Store')
@@ -171,9 +175,50 @@ class FrontendHomeIntegrationTest extends TestCase
         $response = $this->get('/');
 
         $response->assertOk()
-            ->assertSee('Convenience, phone repair and smoothies at one Oxon Hill stop.')
+            ->assertSee('Convenience, phone repair and smoothies — all at one Oxon Hill stop.')
+            ->assertSee('Store')
+            ->assertSee('Phone Repair')
+            ->assertSee('21+ Vape')
+            ->assertSee('storefront-google.webp')
+            ->assertSee('A practical neighborhood stop, built around everyday needs.')
+            ->assertSee('Easy to find in Oxon Hill.')
+            ->assertSee('Find 24/7 IN N OUT on Oxon Hill Rd.')
             ->assertDontSee('Private H1')
             ->assertDontSee('application/ld+json', false);
+    }
+
+    public function test_cms_hero_media_overrides_static_hero_fallback(): void
+    {
+        SeoSetting::query()->create($this->seoData());
+        $home = Page::create($this->pageData(['slug' => 'home', 'is_home' => true]));
+        $hero = PageSection::create([
+            'page_id' => $home->id,
+            'section_key' => 'hero',
+            'section_type' => 'hero',
+            'is_active' => true,
+        ]);
+        $media = MediaAsset::create([
+            'disk' => 'public',
+            'directory' => 'cms',
+            'path' => 'cms/custom-hero.webp',
+            'file_name' => 'custom-hero.webp',
+            'original_name' => 'custom-hero.webp',
+            'mime_type' => 'image/webp',
+            'extension' => 'webp',
+            'file_size' => 1000,
+            'is_active' => true,
+        ]);
+        MediaAttachment::create([
+            'media_asset_id' => $media->id,
+            'mediable_type' => PageSection::class,
+            'mediable_id' => $hero->id,
+            'collection' => 'image',
+            'is_primary' => true,
+        ]);
+
+        $this->get('/')
+            ->assertOk()
+            ->assertSee('/storage/cms/custom-hero.webp', false);
     }
 
     private function pageData(array $overrides = []): array

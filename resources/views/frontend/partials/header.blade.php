@@ -4,13 +4,11 @@
             <svg class="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21s7-4.35 7-11a7 7 0 1 0-14 0c0 6.65 7 11 7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg>
             <span class="truncate">{{ $location['address'] }}</span>
         </a>
-        @if(! empty($location['phone']))
-            <a href="tel:{{ preg_replace('/[^0-9+]/', '', $location['phone']) }}" class="hidden font-semibold hover:text-red-700 dark:hover:text-amber-300 sm:inline">{{ $location['phone'] }}</a>
-        @endif
+        <span class="hidden shrink-0 font-semibold sm:inline">{{ $fallback['top_bar_text'] }}</span>
     </div>
 </div>
 <header class="sticky top-0 z-50 border-b border-slate-200/80 bg-white/90 backdrop-blur-xl dark:border-slate-800 dark:bg-slate-950/88">
-    <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8">
+    <div class="mx-auto flex h-20 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
         <a href="{{ route('home') }}" class="flex shrink-0 items-center gap-3" aria-label="{{ $business['name'] }} home">
             <img src="{{ $business['logo'] }}" alt="" width="48" height="48" class="h-11 w-11">
             <span class="leading-tight">
@@ -20,7 +18,8 @@
         </a>
         <nav class="hidden items-center gap-0.5 lg:flex" aria-label="Primary navigation">
             @foreach($menus['header'] as $item)
-                <a href="{{ $item['url'] }}" target="{{ $item['target'] }}" @if($item['rel']) rel="{{ $item['rel'] }}" @endif class="rounded-lg px-2.5 py-2 text-sm font-semibold transition {{ request()->url() === url($item['url']) || ($item['url'] === route('home') && request()->routeIs('home')) ? 'text-red-700 dark:text-amber-300' : 'text-slate-700 hover:text-red-700 dark:text-slate-200 dark:hover:text-amber-300' }}" @if($item['url'] === route('home') && request()->routeIs('home')) aria-current="page" @endif>{{ $item['label'] }}</a>
+                @php($isHomeLink = $item['url'] === route('home') && request()->routeIs('home'))
+                <a href="{{ $item['url'] }}" target="{{ $item['target'] }}" @if($item['rel']) rel="{{ $item['rel'] }}" @endif class="rounded-lg px-2.5 py-2 text-sm font-semibold transition {{ $isHomeLink ? 'text-red-700 dark:text-amber-300' : 'text-slate-700 hover:text-red-700 dark:text-slate-200 dark:hover:text-amber-300' }}" @if($isHomeLink) aria-current="page" @endif>{{ $item['label'] }}</a>
             @endforeach
         </nav>
         <div class="flex items-center gap-2">
