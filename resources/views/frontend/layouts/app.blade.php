@@ -10,5 +10,6 @@
     @include('frontend.partials.footer')
     @include('frontend.partials.structured-data')
     <script src="{{ asset('frontend-asset/assets/js/app.js') }}" defer></script>
+    @stack('scripts')
 </body>
 </html>

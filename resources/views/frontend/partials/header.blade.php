@@ -18,8 +18,8 @@
         </a>
         <nav class="hidden items-center gap-0.5 lg:flex" aria-label="Primary navigation">
             @foreach($menus['header'] as $item)
-                @php($isHomeLink = $item['url'] === route('home') && request()->routeIs('home'))
-                <a href="{{ $item['url'] }}" target="{{ $item['target'] }}" @if($item['rel']) rel="{{ $item['rel'] }}" @endif class="rounded-lg px-2.5 py-2 text-sm font-semibold transition {{ $isHomeLink ? 'text-red-700 dark:text-amber-300' : 'text-slate-700 hover:text-red-700 dark:text-slate-200 dark:hover:text-amber-300' }}" @if($isHomeLink) aria-current="page" @endif>{{ $item['label'] }}</a>
+                @php($isActiveLink = rtrim(request()->url(), '/') === rtrim(url($item['url']), '/'))
+                <a href="{{ $item['url'] }}" target="{{ $item['target'] }}" @if($item['rel']) rel="{{ $item['rel'] }}" @endif class="rounded-lg px-2.5 py-2 text-sm font-semibold transition {{ $isActiveLink ? 'text-red-700 dark:text-amber-300' : 'text-slate-700 hover:text-red-700 dark:text-slate-200 dark:hover:text-amber-300' }}" @if($isActiveLink) aria-current="page" @endif>{{ $item['label'] }}</a>
             @endforeach
         </nav>
         <div class="flex items-center gap-2">

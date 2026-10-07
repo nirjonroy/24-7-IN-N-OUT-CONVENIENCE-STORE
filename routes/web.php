@@ -32,7 +32,13 @@ use App\Http\Controllers\Admin\SiteinfoController;
 use App\Http\Controllers\Admin\SliderController;
 use App\Http\Controllers\Admin\SocialLinkController;
 use App\Http\Controllers\Admin\SpecialBusinessHourController;
+use App\Http\Controllers\Frontend\AboutController as FrontendAboutController;
+use App\Http\Controllers\Frontend\CatalogController;
+use App\Http\Controllers\Frontend\ContactController as FrontendContactController;
+use App\Http\Controllers\Frontend\FaqController as FrontendFaqController;
+use App\Http\Controllers\Frontend\GalleryController as FrontendGalleryController;
 use App\Http\Controllers\Frontend\HomeController;
+use App\Http\Controllers\Frontend\PhoneRepairController;
 use App\Http\Controllers\Frontend\RobotsController;
 use App\Http\Controllers\Frontend\SitemapController;
 use Illuminate\Support\Facades\Route;
@@ -51,6 +57,16 @@ use Illuminate\Support\Facades\Route;
 Route::get('/sitemap.xml', SitemapController::class)->name('sitemap.xml');
 Route::get('/robots.txt', RobotsController::class)->name('robots.txt');
 Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/convenience-store', [CatalogController::class, 'convenienceStore'])->name('frontend.convenience-store');
+Route::get('/phone-repair/models', [PhoneRepairController::class, 'models'])->name('frontend.phone-repair.models');
+Route::get('/phone-repair/estimate', [PhoneRepairController::class, 'estimate'])->name('frontend.phone-repair.estimate');
+Route::get('/phone-repair', [PhoneRepairController::class, 'index'])->name('frontend.phone-repair');
+Route::get('/smoothies', [CatalogController::class, 'smoothies'])->name('frontend.smoothies');
+Route::get('/vape-tobacco', [CatalogController::class, 'adultRetail'])->name('frontend.vape-tobacco');
+Route::get('/about', [FrontendAboutController::class, 'index'])->name('frontend.about');
+Route::get('/faq', [FrontendFaqController::class, 'index'])->name('frontend.faq');
+Route::get('/gallery', [FrontendGalleryController::class, 'index'])->name('frontend.gallery');
+Route::get('/contact', [FrontendContactController::class, 'index'])->name('frontend.contact');
 
 Route::get('/dashboard', [DashboardController::class, 'index'])
     ->middleware(['auth', 'verified'])

@@ -4,10 +4,34 @@ namespace App\Services;
 
 use App\Models\MenuItem;
 use App\Models\Page;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
 
 class PageUrlService
 {
+    private const ROUTES = [
+        'home' => 'home',
+        'convenience-store' => 'frontend.convenience-store',
+        'phone-repair' => 'frontend.phone-repair',
+        'smoothies' => 'frontend.smoothies',
+        'vape-tobacco' => 'frontend.vape-tobacco',
+        'about' => 'frontend.about',
+        'faq' => 'frontend.faq',
+        'gallery' => 'frontend.gallery',
+        'contact' => 'frontend.contact',
+    ];
+
+    public function slug(string $slug): string
+    {
+        $slug = trim($slug, '/');
+
+        if (isset(self::ROUTES[$slug]) && Route::has(self::ROUTES[$slug])) {
+            return route(self::ROUTES[$slug]);
+        }
+
+        return url('/'.ltrim($slug, '/'));
+    }
+
     public function page(?Page $page): string
     {
         if (! $page) {
@@ -18,7 +42,7 @@ class PageUrlService
             return route('home');
         }
 
-        return url('/'.ltrim($page->slug, '/'));
+        return $this->slug($page->slug);
     }
 
     public function menuItem(MenuItem $item): string

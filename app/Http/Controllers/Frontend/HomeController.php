@@ -90,6 +90,13 @@ class HomeController extends Controller
             ]);
 
         $seo = $seoService->resolve($page, $request);
+        $seo = array_merge($seo, [
+            'title' => $seo['title'] ?: '24/7 IN N OUT Convenience Store',
+            'description' => $seo['description'] ?: $fallback['hero']['description'],
+            'canonical' => $seo['canonical'] ?: $request->url(),
+            'og_title' => $seo['og_title'] ?: '24/7 IN N OUT Convenience Store',
+            'og_description' => $seo['og_description'] ?: $fallback['hero']['description'],
+        ]);
         $settings = SeoSetting::current();
         $canonicalRoot = rtrim($settings->canonical_base_url ?: config('app.url'), '/');
         $structuredData = $settings->structured_data_enabled

@@ -13,15 +13,31 @@ class SeoService
         $settings = SeoSetting::current();
         $title = $this->title($content, $settings);
 
+        $description = $this->first([$this->value($content, 'meta_description'), $this->value($content, 'seo_description'), $this->value($content, 'description'), $this->value($content, 'intro_text'), $settings->default_description]);
+        $canonical = $this->canonical($content, $request, $settings);
+        $metaImage = $this->metaImage($content, $settings);
+        $ogTitle = $this->first([$this->value($content, 'og_title'), $title]);
+        $ogDescription = $this->first([$this->value($content, 'og_description'), $description]);
+
         return [
             'title' => $title,
-            'description' => $this->first([$this->value($content, 'meta_description'), $this->value($content, 'seo_description'), $this->value($content, 'description'), $this->value($content, 'intro_text'), $settings->default_description]),
-            'canonical' => $this->canonical($content, $request, $settings),
+            'description' => $description,
+            'canonical' => $canonical,
             'robots' => $this->robots($content, $settings),
-            'meta_image' => $this->metaImage($content, $settings),
-            'og_title' => $this->first([$this->value($content, 'og_title'), $title]),
-            'og_description' => $this->first([$this->value($content, 'og_description'), $this->value($content, 'meta_description'), $settings->default_description]),
+            'meta_image' => $metaImage,
+            'og_title' => $ogTitle,
+            'og_description' => $ogDescription,
+            'og_type' => 'website',
+            'og_url' => $canonical,
+            'og_image' => $metaImage,
             'site_name' => $settings->site_name,
+            'twitter_card' => $settings->twitter_card ?: 'summary_large_image',
+            'twitter_title' => $ogTitle ?: $title,
+            'twitter_description' => $ogDescription ?: $description,
+            'twitter_image' => $metaImage,
+            'twitter_site' => $settings->twitter_site,
+            'google_site_verification' => $settings->google_site_verification,
+            'bing_site_verification' => $settings->bing_site_verification,
             'author' => $this->first([$this->value($content, 'author'), $settings->default_author]),
             'publisher' => $this->first([$this->value($content, 'publisher'), $settings->default_publisher]),
             'copyright' => $this->first([$this->value($content, 'copyright'), $settings->default_copyright]),
