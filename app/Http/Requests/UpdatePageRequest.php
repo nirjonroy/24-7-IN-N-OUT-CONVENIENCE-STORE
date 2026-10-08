@@ -6,6 +6,7 @@ use App\Models\Page;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Validator;
 
 class UpdatePageRequest extends FormRequest
 {
@@ -21,7 +22,7 @@ class UpdatePageRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:150'],
             'slug' => ['nullable', 'string', 'max:180', Rule::unique('pages', 'slug')->ignore($page)],
-            'route_name' => ['nullable', 'string', 'max:150'],
+            'route_name' => ['nullable', 'string', 'max:150', Rule::in(array_values(config('public-pages.special_routes', [])))],
             'template' => ['required', 'string', 'max:100'],
             'h1' => ['required', 'string', 'max:255'],
             'intro_text' => ['nullable', 'string'],
@@ -60,5 +61,16 @@ class UpdatePageRequest extends FormRequest
         if ($slugSource) {
             $this->merge(['slug' => Str::slug($slugSource)]);
         }
+    }
+
+    public function withValidator(Validator $validator): void
+    {
+        $validator->after(function (Validator $validator) {
+            $slug = (string) $this->input('slug');
+
+            if (app(\App\Services\PageUrlService::class)->isSystemReservedSlug($slug)) {
+                $validator->errors()->add('slug', 'This URL slug is reserved by the application.');
+            }
+        });
     }
 }

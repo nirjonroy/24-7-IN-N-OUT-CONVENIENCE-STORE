@@ -171,7 +171,8 @@ class SeoInfrastructureTest extends TestCase
         $response = $this->get('/sitemap.xml')->assertOk();
 
         $response->assertHeader('Content-Type', 'application/xml; charset=UTF-8');
-        $response->assertSee('https://example.com/a?x=1&amp;y=2', false);
+        $response->assertSee('https://example.com/published', false);
+        $response->assertDontSee('https://example.com/a?x=1&amp;y=2', false);
         $response->assertSee('<lastmod>', false);
         $response->assertDontSee('/draft');
         $response->assertDontSee('/private');

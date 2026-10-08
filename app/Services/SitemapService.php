@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Page;
 use App\Models\SeoSetting;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Route;
 
 class SitemapService
 {
@@ -31,21 +32,42 @@ class SitemapService
     public function urls(?SeoSetting $settings = null): array
     {
         $settings ??= SeoSetting::current();
-        $base = rtrim($settings->canonical_base_url ?: config('app.url'), '/');
-
-        return Page::published()
+        $pageUrls = app(PageUrlService::class);
+        $rows = collect();
+        $pages = Page::published()
             ->where('robots_index', true)
             ->orderBy('sort_order')
             ->orderBy('id')
-            ->get()
-            ->map(function (Page $page) use ($base) {
-                $path = $page->is_home ? '' : '/'.ltrim($page->slug, '/');
+            ->get();
 
-                return [
-                    'loc' => $page->canonical_url ?: $base.$path,
-                    'lastmod' => optional($page->updated_at)->toAtomString(),
-                ];
-            })
+        foreach ($pageUrls->specialRoutes() as $slug => $routeName) {
+            if (! Route::has($routeName)) {
+                continue;
+            }
+
+            $page = $slug === 'home'
+                ? $pages->first(fn (Page $page) => $page->is_home || $page->slug === 'home')
+                : $pages->firstWhere('slug', $slug);
+
+            $rows->push([
+                'loc' => $this->canonicalize($pageUrls->slug($slug), $settings),
+                'lastmod' => optional($page?->updated_at)->toAtomString(),
+            ]);
+        }
+
+        $genericRows = $pages
+            ->reject(fn (Page $page) => $page->is_home || $page->slug === 'home' || $pageUrls->isSpecialSlug($page->slug))
+            ->filter(fn (Page $page) => $pageUrls->isPubliclyResolvable($page))
+            ->map(fn (Page $page) => [
+                'loc' => $this->canonicalize($pageUrls->page($page, true), $settings),
+                'lastmod' => optional($page->updated_at)->toAtomString(),
+            ]);
+
+        return $rows
+            ->merge($genericRows)
+            ->filter(fn (array $url) => $url['loc'] !== '#')
+            ->unique('loc')
+            ->values()
             ->all();
     }
 
@@ -64,5 +86,13 @@ class SitemapService
         }
 
         return $xml."</urlset>\n";
+    }
+
+    private function canonicalize(string $url, SeoSetting $settings): string
+    {
+        $base = rtrim($settings->canonical_base_url ?: config('app.url'), '/');
+        $path = parse_url($url, PHP_URL_PATH) ?: '/';
+
+        return $base.($path === '/' ? '' : $path);
     }
 }

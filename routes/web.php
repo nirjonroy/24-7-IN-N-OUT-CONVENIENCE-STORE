@@ -36,8 +36,10 @@ use App\Http\Controllers\Frontend\AboutController as FrontendAboutController;
 use App\Http\Controllers\Frontend\CatalogController;
 use App\Http\Controllers\Frontend\ContactController as FrontendContactController;
 use App\Http\Controllers\Frontend\FaqController as FrontendFaqController;
+use App\Http\Controllers\Frontend\FallbackController;
 use App\Http\Controllers\Frontend\GalleryController as FrontendGalleryController;
 use App\Http\Controllers\Frontend\HomeController;
+use App\Http\Controllers\Frontend\PageController as FrontendPageController;
 use App\Http\Controllers\Frontend\PhoneRepairController;
 use App\Http\Controllers\Frontend\RobotsController;
 use App\Http\Controllers\Frontend\SitemapController;
@@ -67,6 +69,7 @@ Route::get('/about', [FrontendAboutController::class, 'index'])->name('frontend.
 Route::get('/faq', [FrontendFaqController::class, 'index'])->name('frontend.faq');
 Route::get('/gallery', [FrontendGalleryController::class, 'index'])->name('frontend.gallery');
 Route::get('/contact', [FrontendContactController::class, 'index'])->name('frontend.contact');
+Route::post('/contact', [FrontendContactController::class, 'store'])->middleware('throttle:5,1')->name('frontend.contact.store');
 
 Route::get('/dashboard', [DashboardController::class, 'index'])
     ->middleware(['auth', 'verified'])
@@ -153,3 +156,9 @@ Route::middleware('auth')->group(function () {
 });
 
 require __DIR__.'/auth.php';
+
+Route::get('/{slug}', [FrontendPageController::class, 'show'])
+    ->where('slug', \App\Services\PageUrlService::SLUG_PATTERN)
+    ->name('frontend.page.show');
+
+Route::fallback([FallbackController::class, 'handle']);

@@ -11,18 +11,23 @@ class Contact extends Model
     use HasFactory;
     use HasSeoMeta;
 
-    public const STATUSES = ['new', 'read', 'replied', 'spam'];
+    public const STATUSES = ['new', 'read', 'replied', 'archived', 'spam'];
 
     protected $fillable = [
         'name',
         'email',
+        'phone',
         'topic',
+        'subject',
         'message',
         'status',
         'ip_address',
         'user_agent',
+        'referrer',
+        'page_url',
         'read_at',
         'replied_at',
+        'submitted_at',
         'page_name',
         'seo_title',
         'seo_description',
@@ -39,5 +44,6 @@ class Contact extends Model
     protected $casts = [
         'read_at' => 'datetime',
         'replied_at' => 'datetime',
+        'submitted_at' => 'datetime',
     ];
 }

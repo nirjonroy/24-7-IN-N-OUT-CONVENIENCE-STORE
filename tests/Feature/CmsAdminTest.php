@@ -154,6 +154,16 @@ class CmsAdminTest extends TestCase
         ]))->assertSessionHasErrors('status');
     }
 
+    public function test_reserved_page_slug_is_rejected(): void
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)->post(route('admin.pages.store'), $this->pagePayload([
+            'name' => 'Admin',
+            'slug' => 'admin',
+        ]))->assertSessionHasErrors(['slug' => 'This URL slug is reserved by the application.']);
+    }
+
     private function pagePayload(array $overrides = []): array
     {
         return array_merge([

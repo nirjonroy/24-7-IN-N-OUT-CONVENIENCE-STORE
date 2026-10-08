@@ -37,6 +37,7 @@ class ContactInfoController extends Controller
             'form_eyebrow' => ['nullable', 'string', 'max:255'],
             'form_title' => ['nullable', 'string', 'max:255'],
             'form_description' => ['nullable', 'string'],
+            'recipient_email' => ['nullable', 'email:rfc', 'max:255'],
             'status' => ['nullable', 'boolean'],
         ]);
 

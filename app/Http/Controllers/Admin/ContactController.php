@@ -15,6 +15,18 @@ class ContactController extends Controller
     {
         $contacts = Contact::query()
             ->when($request->filled('status'), fn ($query) => $query->where('status', $request->status))
+            ->when($request->filled('topic'), fn ($query) => $query->where('topic', $request->topic))
+            ->when($request->filled('search'), function ($query) use ($request) {
+                $search = trim($request->search);
+
+                $query->where(function ($query) use ($search) {
+                    $query->where('name', 'like', "%{$search}%")
+                        ->orWhere('email', 'like', "%{$search}%")
+                        ->orWhere('phone', 'like', "%{$search}%")
+                        ->orWhere('subject', 'like', "%{$search}%")
+                        ->orWhere('message', 'like', "%{$search}%");
+                });
+            })
             ->latest()
             ->paginate(15)
             ->withQueryString();
@@ -22,6 +34,7 @@ class ContactController extends Controller
         return view('admin.contacts.index', [
             'contacts' => $contacts,
             'statuses' => Contact::STATUSES,
+            'topics' => Contact::query()->whereNotNull('topic')->distinct()->orderBy('topic')->pluck('topic'),
         ]);
     }
 
@@ -55,6 +68,11 @@ class ContactController extends Controller
         if ($validated['status'] === 'replied' && ! $contact->replied_at) {
             $updates['replied_at'] = now();
             $updates['read_at'] = $contact->read_at ?: now();
+        }
+
+        if ($validated['status'] === 'new') {
+            $updates['read_at'] = null;
+            $updates['replied_at'] = null;
         }
 
         $contact->update($updates);

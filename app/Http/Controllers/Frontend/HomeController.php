@@ -163,12 +163,7 @@ class HomeController extends Controller
 
     private function isPublicPage(?Page $page): bool
     {
-        if (! $page) {
-            return false;
-        }
-
-        return $page->status === Page::STATUS_PUBLISHED
-            && (! $page->published_at || $page->published_at->lte(now()));
+        return app(PageUrlService::class)->isPubliclyResolvable($page);
     }
 
     private function rel(MenuItem $item): string

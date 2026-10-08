@@ -15,11 +15,6 @@ use Illuminate\Support\Collection;
 
 class FrontendPageService
 {
-    public const RESERVED_SLUGS = [
-        'admin', 'login', 'logout', 'register', 'password', 'api', 'storage',
-        'build', 'assets', 'sitemap.xml', 'robots.txt', 'favicon.ico',
-    ];
-
     private HomeFallbackService $homeFallbackService;
 
     private PageUrlService $pageUrlService;
@@ -44,6 +39,68 @@ class FrontendPageService
     {
         $fallback = $this->fallback($slug);
         $page = $this->page($slug);
+        $shared = $this->shared($page, $request, $fallback);
+
+        return array_merge($shared, [
+            'pageFallback' => $fallback,
+            'faqs' => $slug === 'faq' ? $this->faqs() : collect(),
+            'galleryItems' => $slug === 'gallery' ? $this->galleryItems() : collect(),
+        ]);
+    }
+
+    public function forPage(Page $page, Request $request): array
+    {
+        $page->loadMissing([
+            'sections' => fn ($query) => $query->active()
+                ->with([
+                    'mediaAttachments.media.variants',
+                    'items' => fn ($query) => $query->active()->with('mediaAttachments.media.variants'),
+                ]),
+            'mediaAttachments.media.variants',
+        ]);
+
+        $fallback = [
+            'slug' => $page->slug,
+            'title' => $page->name,
+            'h1' => $page->h1,
+            'intro' => $page->intro_text,
+            'seo_title' => $page->seo_title ?: $page->meta_title ?: $page->name,
+            'seo_description' => $page->seo_description ?: $page->meta_description ?: $page->intro_text,
+        ];
+
+        return array_merge($this->shared($page, $request, $fallback), [
+            'pageFallback' => $fallback,
+            'faqs' => collect(),
+            'galleryItems' => collect(),
+        ]);
+    }
+
+    public function sharedFallbackData(Request $request, array $seo = []): array
+    {
+        $fallback = [
+            'title' => 'Page not found',
+            'h1' => 'Page not found',
+            'intro' => 'The page you requested does not exist or has moved.',
+            'seo_title' => 'Page not found | 24/7 IN N OUT',
+            'seo_description' => 'The page you requested does not exist or has moved.',
+        ];
+
+        $data = $this->shared(null, $request, $fallback);
+
+        $data['seo'] = array_merge($data['seo'], [
+            'title' => $seo['title'] ?? $fallback['seo_title'],
+            'description' => $seo['description'] ?? $fallback['seo_description'],
+            'robots' => $seo['robots'] ?? 'noindex, nofollow',
+            'canonical' => null,
+            'og_url' => null,
+        ]);
+        $data['structuredData'] = [];
+
+        return $data;
+    }
+
+    private function shared(?Page $page, Request $request, array $fallback): array
+    {
         $business = $this->business();
         $location = $business?->locations->first();
         $menus = $this->menus();
@@ -69,9 +126,6 @@ class FrontendPageService
             ])) : [],
             'assetsBase' => asset('frontend-asset'),
             'fallback' => $this->homeFallbackService->data(),
-            'pageFallback' => $fallback,
-            'faqs' => $slug === 'faq' ? $this->faqs() : collect(),
-            'galleryItems' => $slug === 'gallery' ? $this->galleryItems() : collect(),
         ];
     }
 
@@ -94,7 +148,10 @@ class FrontendPageService
     {
         return Business::with([
             'mediaAttachments.media.variants',
-            'locations' => fn ($query) => $query->where('is_active', true)->with('businessHours')->orderByDesc('is_primary')->orderBy('id'),
+            'locations' => fn ($query) => $query->where('is_active', true)
+                ->with(['businessHours', 'specialBusinessHours' => fn ($query) => $query->where('date', '>=', now()->toDateString())->orderBy('date')])
+                ->orderByDesc('is_primary')
+                ->orderBy('id'),
             'socialLinks' => fn ($query) => $query->where('is_active', true)->orderBy('sort_order')->orderBy('id'),
         ])->where('is_active', true)->first();
     }
@@ -134,7 +191,7 @@ class FrontendPageService
 
     private function menuItem(MenuItem $item): ?array
     {
-        if ($item->link_type === MenuItem::LINK_PAGE && ! $this->isPublicPage($item->page)) {
+        if ($item->link_type === MenuItem::LINK_PAGE && ! $this->pageUrlService->isPubliclyResolvable($item->page)) {
             return null;
         }
 
@@ -145,13 +202,6 @@ class FrontendPageService
             'rel' => $this->rel($item),
             'children' => $item->children->map(fn (MenuItem $child) => $this->menuItem($child))->filter()->values(),
         ];
-    }
-
-    private function isPublicPage(?Page $page): bool
-    {
-        return $page
-            && $page->status === Page::STATUS_PUBLISHED
-            && (! $page->published_at || $page->published_at->lte(now()));
     }
 
     private function rel(MenuItem $item): string
@@ -219,6 +269,11 @@ class FrontendPageService
             'hours' => $location?->businessHours->sortBy('day_of_week')->map(fn ($hour) => [
                 'day' => ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'][$hour->day_of_week - 1] ?? 'Day',
                 'text' => $hour->is_closed ? 'Closed' : ($hour->is_24_hours ? 'Open 24 hours' : trim(substr((string) $hour->opens_at, 0, 5).' - '.substr((string) $hour->closes_at, 0, 5))),
+            ])->values() ?: collect(),
+            'special_hours' => $location?->specialBusinessHours->map(fn ($hour) => [
+                'date' => $hour->date?->format('M d, Y'),
+                'text' => $hour->is_closed ? 'Closed' : trim(substr((string) $hour->opens_at, 0, 5).' - '.substr((string) $hour->closes_at, 0, 5)),
+                'note' => $hour->note,
             ])->values() ?: collect(),
         ];
     }

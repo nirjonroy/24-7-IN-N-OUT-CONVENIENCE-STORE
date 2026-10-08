@@ -19,6 +19,14 @@ class RobotsService
             'Allow: /',
             'Disallow: /admin/',
             'Disallow: /login',
+            'Disallow: /logout',
+            'Disallow: /register',
+            'Disallow: /password',
+            'Disallow: /forgot-password',
+            'Disallow: /reset-password',
+            'Disallow: /profile',
+            'Disallow: /api/',
+            'Disallow: /frontend-asset/',
         ];
 
         if ($settings->robots_txt_extra) {

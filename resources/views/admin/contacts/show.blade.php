@@ -37,10 +37,14 @@
                       <dd class="col-sm-9">{{ $contact->name }}</dd>
                       <dt class="col-sm-3">Email</dt>
                       <dd class="col-sm-9"><a href="mailto:{{ $contact->email }}">{{ $contact->email }}</a></dd>
+                      <dt class="col-sm-3">Phone</dt>
+                      <dd class="col-sm-9">{{ $contact->phone ?: '-' }}</dd>
                       <dt class="col-sm-3">Topic</dt>
                       <dd class="col-sm-9">{{ $contact->topic ?: '-' }}</dd>
+                      <dt class="col-sm-3">Subject</dt>
+                      <dd class="col-sm-9">{{ $contact->subject ?: '-' }}</dd>
                       <dt class="col-sm-3">Message</dt>
-                      <dd class="col-sm-9">{{ $contact->message }}</dd>
+                      <dd class="col-sm-9"><div class="border rounded p-3 bg-light" style="white-space: pre-wrap;">{{ $contact->message }}</div></dd>
                     </dl>
                   </div>
                 </div>
@@ -64,8 +68,13 @@
                       <button type="submit" class="btn btn-primary">Update Status</button>
                     </form>
 
+                    <a href="mailto:{{ $contact->email }}?subject={{ rawurlencode('Re: '.$contact->subject) }}" class="btn btn-outline-primary btn-sm mb-3">Reply by Email</a>
+
                     <p class="mb-1"><strong>IP:</strong> {{ $contact->ip_address ?: '-' }}</p>
-                    <p class="mb-1"><strong>Submitted:</strong> {{ $contact->created_at->format('M d, Y h:i A') }}</p>
+                    <p class="mb-1"><strong>User Agent:</strong> {{ $contact->user_agent ?: '-' }}</p>
+                    <p class="mb-1"><strong>Referrer:</strong> {{ $contact->referrer ?: '-' }}</p>
+                    <p class="mb-1"><strong>Page:</strong> {{ $contact->page_url ?: '-' }}</p>
+                    <p class="mb-1"><strong>Submitted:</strong> {{ ($contact->submitted_at ?: $contact->created_at)->format('M d, Y h:i A') }}</p>
                     <p class="mb-1"><strong>Read:</strong> {{ $contact->read_at?->format('M d, Y h:i A') ?: '-' }}</p>
                     <p class="mb-0"><strong>Replied:</strong> {{ $contact->replied_at?->format('M d, Y h:i A') ?: '-' }}</p>
                   </div>

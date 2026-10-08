@@ -133,6 +133,12 @@
                     @error('form_description')<div class="invalid-feedback">{{ $message }}</div>@enderror
                   </div>
 
+                  <div class="mb-3">
+                    <label for="recipient_email" class="form-label">Admin Notification Email</label>
+                    <input type="email" name="recipient_email" id="recipient_email" value="{{ old('recipient_email', $contactInfo?->recipient_email) }}" class="form-control @error('recipient_email') is-invalid @enderror" />
+                    @error('recipient_email')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                  </div>
+
                   <div class="form-check form-switch">
                     <input type="hidden" name="status" value="0" />
                     <input class="form-check-input" type="checkbox" name="status" id="status" value="1" {{ old('status', $contactInfo?->status ?? true) ? 'checked' : '' }} />

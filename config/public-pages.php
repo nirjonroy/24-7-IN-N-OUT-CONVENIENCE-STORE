@@ -1,0 +1,50 @@
+<?php
+
+return [
+    'reserved_slugs' => [
+        'admin',
+        'api',
+        'assets',
+        'build',
+        'dashboard',
+        'email',
+        'favicon.ico',
+        'forgot-password',
+        'login',
+        'logout',
+        'password',
+        'profile',
+        'register',
+        'reset-password',
+        'robots.txt',
+        'sanctum',
+        'sitemap.xml',
+        'storage',
+        'vendor',
+        'verify-email',
+    ],
+
+    'special_routes' => [
+        'home' => 'home',
+        'convenience-store' => 'frontend.convenience-store',
+        'phone-repair' => 'frontend.phone-repair',
+        'smoothies' => 'frontend.smoothies',
+        'vape-tobacco' => 'frontend.vape-tobacco',
+        'about' => 'frontend.about',
+        'faq' => 'frontend.faq',
+        'gallery' => 'frontend.gallery',
+        'contact' => 'frontend.contact',
+    ],
+
+    'legacy_html_redirects' => [
+        '/index.html' => '/',
+        '/convenience-store.html' => '/convenience-store',
+        '/phone-repair.html' => '/phone-repair',
+        '/smoothies.html' => '/smoothies',
+        '/vape-tobacco.html' => '/vape-tobacco',
+        '/about.html' => '/about',
+        '/faq.html' => '/faq',
+        '/gallery.html' => '/gallery',
+        '/contact.html' => '/contact',
+    ],
+];

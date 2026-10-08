@@ -27,6 +27,7 @@ class ContactInfo extends Model
         'form_eyebrow',
         'form_title',
         'form_description',
+        'recipient_email',
         'status',
         'page_name',
         'seo_title',

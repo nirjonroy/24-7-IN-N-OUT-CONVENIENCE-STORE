@@ -21,16 +21,8 @@
         <div class="app-content">
           <div class="container-fluid">
             <div class="card mb-4">
-              <div class="card-header d-flex align-items-center">
+              <div class="card-header">
                 <h3 class="card-title mb-0">Contact Messages</h3>
-                <form method="GET" class="ms-auto">
-                  <select name="status" class="form-select form-select-sm" onchange="this.form.submit()">
-                    <option value="">All Statuses</option>
-                    @foreach ($statuses as $status)
-                      <option value="{{ $status }}" @selected(request('status') === $status)>{{ ucfirst($status) }}</option>
-                    @endforeach
-                  </select>
-                </form>
               </div>
 
               <div class="card-body">
@@ -38,13 +30,41 @@
                   <div class="alert alert-success">{{ session('success') }}</div>
                 @endif
 
+                <form method="GET" class="row g-2 mb-3">
+                  <div class="col-md-4">
+                    <input type="search" name="search" value="{{ request('search') }}" class="form-control" placeholder="Search name, email, subject, message">
+                  </div>
+                  <div class="col-md-3">
+                    <select name="status" class="form-select">
+                      <option value="">All Statuses</option>
+                      @foreach ($statuses as $status)
+                        <option value="{{ $status }}" @selected(request('status') === $status)>{{ ucfirst($status) }}</option>
+                      @endforeach
+                    </select>
+                  </div>
+                  <div class="col-md-3">
+                    <select name="topic" class="form-select">
+                      <option value="">All Topics</option>
+                      @foreach ($topics as $topic)
+                        <option value="{{ $topic }}" @selected(request('topic') === $topic)>{{ $topic }}</option>
+                      @endforeach
+                    </select>
+                  </div>
+                  <div class="col-md-2 d-flex gap-2">
+                    <button class="btn btn-primary w-100">Filter</button>
+                    <a href="{{ route('admin.contacts.index') }}" class="btn btn-secondary">Reset</a>
+                  </div>
+                </form>
+
                 <div class="table-responsive">
                   <table class="table table-bordered table-striped align-middle">
                     <thead>
                       <tr>
+                        <th>ID</th>
                         <th>Name</th>
                         <th>Email</th>
-                        <th>Topic</th>
+                        <th>Topic / Subject</th>
+                        <th>Preview</th>
                         <th>Status</th>
                         <th>Submitted</th>
                         <th style="width: 170px;">Action</th>
@@ -53,11 +73,16 @@
                     <tbody>
                       @forelse ($contacts as $contact)
                         <tr>
+                          <td>{{ $contact->id }}</td>
                           <td>{{ $contact->name }}</td>
                           <td><a href="mailto:{{ $contact->email }}">{{ $contact->email }}</a></td>
-                          <td>{{ $contact->topic ?: '-' }}</td>
-                          <td><span class="badge text-bg-{{ $contact->status === 'new' ? 'primary' : ($contact->status === 'spam' ? 'danger' : 'secondary') }}">{{ ucfirst($contact->status) }}</span></td>
-                          <td>{{ $contact->created_at->format('M d, Y h:i A') }}</td>
+                          <td>
+                            <div>{{ $contact->topic ?: '-' }}</div>
+                            @if($contact->subject)<small class="text-secondary">{{ $contact->subject }}</small>@endif
+                          </td>
+                          <td>{{ str($contact->message)->limit(80) }}</td>
+                          <td><span class="badge text-bg-{{ $contact->status === 'new' ? 'primary' : ($contact->status === 'spam' ? 'danger' : ($contact->status === 'replied' ? 'success' : 'secondary')) }}">{{ ucfirst($contact->status) }}</span></td>
+                          <td>{{ ($contact->submitted_at ?: $contact->created_at)->format('M d, Y h:i A') }}</td>
                           <td>
                             <a href="{{ route('admin.contacts.show', $contact) }}" class="btn btn-info btn-sm">
                               <i class="bi bi-eye"></i>
@@ -73,7 +98,7 @@
                         </tr>
                       @empty
                         <tr>
-                          <td colspan="6" class="text-center text-secondary">No contact messages found.</td>
+                          <td colspan="8" class="text-center text-secondary">No contact messages found.</td>
                         </tr>
                       @endforelse
                     </tbody>

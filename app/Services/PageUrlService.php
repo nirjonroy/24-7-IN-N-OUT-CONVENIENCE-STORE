@@ -9,30 +9,20 @@ use Illuminate\Support\Str;
 
 class PageUrlService
 {
-    private const ROUTES = [
-        'home' => 'home',
-        'convenience-store' => 'frontend.convenience-store',
-        'phone-repair' => 'frontend.phone-repair',
-        'smoothies' => 'frontend.smoothies',
-        'vape-tobacco' => 'frontend.vape-tobacco',
-        'about' => 'frontend.about',
-        'faq' => 'frontend.faq',
-        'gallery' => 'frontend.gallery',
-        'contact' => 'frontend.contact',
-    ];
+    public const SLUG_PATTERN = '[A-Za-z0-9-]+';
 
     public function slug(string $slug): string
     {
         $slug = trim($slug, '/');
 
-        if (isset(self::ROUTES[$slug]) && Route::has(self::ROUTES[$slug])) {
-            return route(self::ROUTES[$slug]);
+        if (($routeName = $this->specialRouteName($slug)) && Route::has($routeName)) {
+            return route($routeName);
         }
 
-        return url('/'.ltrim($slug, '/'));
+        return route('frontend.page.show', ['slug' => $slug]);
     }
 
-    public function page(?Page $page): string
+    public function page(?Page $page, bool $requireResolvable = false): string
     {
         if (! $page) {
             return '#';
@@ -40,6 +30,10 @@ class PageUrlService
 
         if ($page->is_home || $page->slug === 'home') {
             return route('home');
+        }
+
+        if ($requireResolvable && ! $this->isPubliclyResolvable($page)) {
+            return '#';
         }
 
         return $this->slug($page->slug);
@@ -52,6 +46,50 @@ class PageUrlService
         }
 
         return $this->safe($item->url);
+    }
+
+    public function isPubliclyResolvable(?Page $page): bool
+    {
+        if (! $page) {
+            return false;
+        }
+
+        if ($page->is_home || $page->slug === 'home' || $this->isSpecialSlug($page->slug)) {
+            return true;
+        }
+
+        return $this->isGenericSlug($page->slug)
+            && $page->status === Page::STATUS_PUBLISHED
+            && (! $page->published_at || $page->published_at->lte(now()))
+            && ! $page->trashed();
+    }
+
+    public function isGenericSlug(string $slug): bool
+    {
+        $slug = trim($slug, '/');
+
+        return preg_match('/^'.self::SLUG_PATTERN.'$/', $slug) === 1
+            && ! $this->isSystemReservedSlug($slug);
+    }
+
+    public function isSystemReservedSlug(string $slug): bool
+    {
+        return in_array(Str::lower(trim($slug, '/')), config('public-pages.reserved_slugs', []), true);
+    }
+
+    public function isSpecialSlug(string $slug): bool
+    {
+        return array_key_exists(trim($slug, '/'), $this->specialRoutes());
+    }
+
+    public function specialRouteName(string $slug): ?string
+    {
+        return $this->specialRoutes()[trim($slug, '/')] ?? null;
+    }
+
+    public function specialRoutes(): array
+    {
+        return config('public-pages.special_routes', []);
     }
 
     public function safe(?string $url, string $fallback = '#'): string
