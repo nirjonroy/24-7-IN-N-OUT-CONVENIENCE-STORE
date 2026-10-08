@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="640" viewBox="0 0 960 640" role="img" aria-label="Charging port repair illustration">
+  <rect width="960" height="640" fill="#fff7ed"/>
+  <path d="M190 420h310c80 0 120-42 120-118V190" fill="none" stroke="#fb923c" stroke-width="34" stroke-linecap="round"/>
+  <rect x="548" y="120" width="144" height="116" rx="20" fill="#7c2d12"/>
+  <path d="M588 120V84M652 120V84" stroke="#7c2d12" stroke-width="22" stroke-linecap="round"/>
+  <rect x="160" y="378" width="86" height="84" rx="18" fill="#0f172a"/>
+</svg>

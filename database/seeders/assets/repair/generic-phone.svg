@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="640" viewBox="0 0 960 640" role="img" aria-label="Smartphone repair illustration">
+  <rect width="960" height="640" fill="#f8fafc"/>
+  <rect x="330" y="70" width="300" height="500" rx="44" fill="#111827"/>
+  <rect x="356" y="116" width="248" height="396" rx="20" fill="#e0f2fe"/>
+  <path d="M406 252h148M406 300h92M406 348h132" stroke="#0f172a" stroke-width="18" stroke-linecap="round"/>
+  <circle cx="480" cy="540" r="14" fill="#64748b"/>
+  <path d="M654 410l78 78m0-78l-78 78" stroke="#dc2626" stroke-width="24" stroke-linecap="round"/>
+</svg>

@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="640" viewBox="0 0 960 640" role="img" aria-label="Battery replacement illustration">
+  <rect width="960" height="640" fill="#f0fdf4"/>
+  <rect x="250" y="210" width="410" height="220" rx="36" fill="#14532d"/>
+  <rect x="670" y="270" width="48" height="100" rx="12" fill="#14532d"/>
+  <rect x="290" y="250" width="260" height="140" rx="24" fill="#22c55e"/>
+  <path d="M438 258l-60 86h70l-46 88 112-120h-72l36-54z" fill="#fefce8"/>
+</svg>
