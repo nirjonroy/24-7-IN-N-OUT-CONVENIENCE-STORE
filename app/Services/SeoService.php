@@ -86,14 +86,14 @@ class SeoService
     private function metaImage(?Model $content, SeoSetting $settings): ?string
     {
         if ($content && method_exists($content, 'getMediaUrl') && ($url = $content->getMediaUrl('meta_image'))) {
-            return $url;
+            return $this->absoluteUrl($url, $settings);
         }
 
         if ($content && $this->value($content, 'meta_image')) {
-            return $this->value($content, 'meta_image');
+            return $this->absoluteUrl($this->value($content, 'meta_image'), $settings);
         }
 
-        return $settings->getMediaUrl('default_meta_image') ?: $settings->default_meta_image;
+        return $this->absoluteUrl($settings->getMediaUrl('default_meta_image') ?: $settings->default_meta_image, $settings);
     }
 
     private function value(?Model $content, string $field): mixed
@@ -120,5 +120,22 @@ class SeoService
         $path = isset($parts['path']) ? preg_replace('#/+#', '/', $parts['path']) : '';
 
         return rtrim($scheme.'://'.$host.$path, '/') ?: $url;
+    }
+
+    private function absoluteUrl(?string $url, SeoSetting $settings): ?string
+    {
+        if (! $url) {
+            return null;
+        }
+
+        if (filter_var($url, FILTER_VALIDATE_URL)) {
+            return $this->cleanUrl($url);
+        }
+
+        if (str_starts_with($url, '/')) {
+            return rtrim($settings->canonical_base_url ?: config('app.url'), '/').$url;
+        }
+
+        return null;
     }
 }

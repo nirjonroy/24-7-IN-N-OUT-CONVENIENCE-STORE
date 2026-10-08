@@ -14,6 +14,10 @@ class RobotsService
             return "User-agent: *\nDisallow: /\n";
         }
 
+        if (! $settings->robots_enabled) {
+            return "User-agent: *\nDisallow: /\n";
+        }
+
         $lines = [
             'User-agent: *',
             'Allow: /',

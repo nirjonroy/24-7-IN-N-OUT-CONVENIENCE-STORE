@@ -173,6 +173,16 @@ class FrontendRoutingArchitectureTest extends TestCase
         $this->assertStringNotContainsString('Disallow: /storage/', $text);
     }
 
+    public function test_public_responses_include_baseline_security_headers(): void
+    {
+        $response = $this->get('/')->assertOk();
+
+        $response->assertHeader('X-Content-Type-Options', 'nosniff');
+        $response->assertHeader('X-Frame-Options', 'SAMEORIGIN');
+        $response->assertHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+        $response->assertHeader('Permissions-Policy');
+    }
+
     private function pagePayload(array $overrides = []): array
     {
         return array_merge([

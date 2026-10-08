@@ -8,6 +8,15 @@ use App\Models\SeoSetting;
 
 class StructuredDataService
 {
+    private const BUSINESS_TYPES = [
+        'LocalBusiness',
+        'Store',
+        'ConvenienceStore',
+        'ElectronicsStore',
+        'MobilePhoneStore',
+        'FoodEstablishment',
+    ];
+
     public function localBusiness(): ?array
     {
         $settings = SeoSetting::current();
@@ -25,7 +34,7 @@ class StructuredDataService
         }
 
         $location = $business->locations->firstWhere('is_primary', true) ?: $business->locations->first();
-        $type = $business->schema_types[0] ?? 'ConvenienceStore';
+        $type = $this->schemaType($business->schema_types);
 
         $data = [
             '@context' => 'https://schema.org',
@@ -37,11 +46,11 @@ class StructuredDataService
         ];
 
         if ($business->getMediaUrl('logo')) {
-            $data['logo'] = $business->getMediaUrl('logo');
+            $data['logo'] = $this->absoluteUrl($business->getMediaUrl('logo'), $settings);
         }
 
         if ($business->getMediaUrl('meta_image')) {
-            $data['image'] = $business->getMediaUrl('meta_image');
+            $data['image'] = $this->absoluteUrl($business->getMediaUrl('meta_image'), $settings);
         }
 
         if ($location) {
@@ -54,7 +63,7 @@ class StructuredDataService
         $sameAs = $business->socialLinks
             ->where('is_active', true)
             ->pluck('url')
-            ->filter(fn ($url) => filter_var($url, FILTER_VALIDATE_URL))
+            ->filter(fn ($url) => $this->isExternalHttpUrl($url))
             ->values()
             ->all();
 
@@ -95,14 +104,14 @@ class StructuredDataService
             return null;
         }
 
-        $sameAs = $business->socialLinks->where('is_active', true)->pluck('url')->filter(fn ($url) => filter_var($url, FILTER_VALIDATE_URL))->values()->all();
+        $sameAs = $business->socialLinks->where('is_active', true)->pluck('url')->filter(fn ($url) => $this->isExternalHttpUrl($url))->values()->all();
 
         return $this->filter([
             '@context' => 'https://schema.org',
             '@type' => 'Organization',
             'name' => $business->name,
             'url' => rtrim($settings->canonical_base_url ?: config('app.url'), '/'),
-            'logo' => $business->getMediaUrl('logo'),
+            'logo' => $this->absoluteUrl($business->getMediaUrl('logo'), $settings),
             'sameAs' => $sameAs ?: null,
         ]);
     }
@@ -171,5 +180,42 @@ class StructuredDataService
     private function time(?string $time): ?string
     {
         return $time ? substr($time, 0, 5) : null;
+    }
+
+    private function schemaType(?array $types): string
+    {
+        foreach ($types ?: [] as $type) {
+            if (in_array($type, self::BUSINESS_TYPES, true)) {
+                return $type;
+            }
+        }
+
+        return 'ConvenienceStore';
+    }
+
+    private function isExternalHttpUrl(?string $url): bool
+    {
+        if (! filter_var($url, FILTER_VALIDATE_URL)) {
+            return false;
+        }
+
+        return in_array(parse_url($url, PHP_URL_SCHEME), ['http', 'https'], true);
+    }
+
+    private function absoluteUrl(?string $url, SeoSetting $settings): ?string
+    {
+        if (! $url) {
+            return null;
+        }
+
+        if (filter_var($url, FILTER_VALIDATE_URL)) {
+            return $url;
+        }
+
+        if (str_starts_with($url, '/')) {
+            return rtrim($settings->canonical_base_url ?: config('app.url'), '/').$url;
+        }
+
+        return null;
     }
 }
