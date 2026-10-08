@@ -82,10 +82,10 @@ class FrontendPageService
             ->with([
                 'sections' => fn ($query) => $query->active()
                     ->with([
-                        'mediaAttachments.media',
-                        'items' => fn ($query) => $query->active()->with('mediaAttachments.media'),
+                        'mediaAttachments.media.variants',
+                        'items' => fn ($query) => $query->active()->with('mediaAttachments.media.variants'),
                     ]),
-                'mediaAttachments.media',
+                'mediaAttachments.media.variants',
             ])
             ->first();
     }
@@ -93,7 +93,7 @@ class FrontendPageService
     private function business(): ?Business
     {
         return Business::with([
-            'mediaAttachments.media',
+            'mediaAttachments.media.variants',
             'locations' => fn ($query) => $query->where('is_active', true)->with('businessHours')->orderByDesc('is_primary')->orderBy('id'),
             'socialLinks' => fn ($query) => $query->where('is_active', true)->orderBy('sort_order')->orderBy('id'),
         ])->where('is_active', true)->first();
@@ -169,10 +169,10 @@ class FrontendPageService
     {
         return $page?->sections
             ->map(function ($section) {
-                $section->frontend_image = $this->mediaUrl($section, 'image', $section->image);
-                $section->frontend_background_image = $this->mediaUrl($section, 'background', $section->background_image);
+                $section->frontend_image = $this->mediaUrl($section, 'image', $section->image, 'large');
+                $section->frontend_background_image = $this->mediaUrl($section, 'background', $section->background_image, 'large');
                 $section->items->each(function ($item) {
-                    $item->frontend_image = $this->mediaUrl($item, 'image', $item->image);
+                    $item->frontend_image = $this->mediaUrl($item, 'image', $item->image, 'medium');
                 });
 
                 return $section;
@@ -252,7 +252,7 @@ class FrontendPageService
             ])->filter(fn ($item) => $item['image'])->values();
     }
 
-    private function mediaUrl(Model $model, string $collection, ?string $fallback = null): ?string
+    private function mediaUrl(Model $model, string $collection, ?string $fallback = null, ?string $variant = null): ?string
     {
         if (! $model->relationLoaded('mediaAttachments')) {
             return $fallback;
@@ -267,7 +267,11 @@ class FrontendPageService
             ])
             ->first();
 
-        return $attachment?->media?->url ?: $fallback;
+        if (! $attachment?->media?->is_active) {
+            return $fallback;
+        }
+
+        return $variant ? $attachment->media->getVariantUrl($variant) : $attachment->media->url;
     }
 
     private function fallback(string $slug): array
