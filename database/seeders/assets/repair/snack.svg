@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="640" viewBox="0 0 960 640" role="img" aria-label="Convenience store snacks illustration">
+  <rect width="960" height="640" fill="#fff7ed"/>
+  <path d="M290 130h260l70 380H220z" fill="#f97316"/>
+  <path d="M330 130h180l28 380H302z" fill="#fed7aa"/>
+  <circle cx="420" cy="320" r="88" fill="#fb923c"/>
+  <path d="M350 220h140M340 444h160" stroke="#7c2d12" stroke-width="24" stroke-linecap="round"/>
+</svg>

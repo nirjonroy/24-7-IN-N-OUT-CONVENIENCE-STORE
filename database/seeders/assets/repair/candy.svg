@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="640" viewBox="0 0 960 640" role="img" aria-label="Candy illustration">
+  <rect width="960" height="640" fill="#fdf2f8"/>
+  <path d="M230 320l120-88v176zM730 320l-120 88V232z" fill="#be185d"/>
+  <rect x="332" y="212" width="296" height="216" rx="44" fill="#f472b6"/>
+  <path d="M388 276h184M388 344h126" stroke="#831843" stroke-width="22" stroke-linecap="round"/>
+</svg>

@@ -4,15 +4,18 @@ namespace Tests\Feature;
 
 use App\Models\CatalogCategory;
 use App\Models\CatalogItem;
+use App\Models\CatalogItemVariant;
 use App\Models\DeviceBrand;
 use App\Models\DeviceModel;
 use App\Models\MediaAsset;
 use App\Models\MediaAttachment;
 use App\Models\RepairService;
 use App\Models\RepairServicePrice;
+use App\Services\FrontendCatalogService;
 use App\Services\FrontendRepairService;
 use Database\Seeders\PhoneAccessoryReferenceSeeder;
 use Database\Seeders\RepairReferenceSeeder;
+use Database\Seeders\ReferenceContentSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -110,6 +113,58 @@ class RepairReferenceSeederTest extends TestCase
         ]);
     }
 
+    public function test_reference_content_seeder_covers_all_frontend_business_areas_and_is_idempotent(): void
+    {
+        $this->seed(ReferenceContentSeeder::class);
+
+        $counts = $this->referenceCounts();
+
+        $this->assertSame(6, CatalogCategory::where('business_area', 'convenience')->count());
+        $this->assertSame(9, CatalogItem::whereHas('category', fn ($query) => $query->where('business_area', 'convenience'))->count());
+        $this->assertSame(4, CatalogCategory::where('business_area', 'smoothie')->count());
+        $this->assertSame(6, CatalogItem::whereHas('category', fn ($query) => $query->where('business_area', 'smoothie'))->count());
+        $this->assertSame(5, CatalogCategory::where('business_area', 'adult_retail')->count());
+        $this->assertSame(6, CatalogItem::whereHas('category', fn ($query) => $query->where('business_area', 'adult_retail'))->count());
+        $this->assertSame(1, CatalogCategory::where('business_area', 'phone_accessory')->count());
+        $this->assertSame(5, CatalogItem::whereHas('category', fn ($query) => $query->where('business_area', 'phone_accessory'))->count());
+
+        $this->seed(ReferenceContentSeeder::class);
+
+        $this->assertSame($counts, $this->referenceCounts());
+    }
+
+    public function test_frontend_catalog_pages_receive_dynamic_reference_data_without_zero_prices_or_hotlinks(): void
+    {
+        $this->seed(ReferenceContentSeeder::class);
+
+        $service = app(FrontendCatalogService::class);
+
+        $convenience = $service->forArea('convenience', ['image' => null]);
+        $smoothies = $service->forArea('smoothie', ['image' => null]);
+        $adult = $service->forArea('adult_retail', ['image' => null]);
+
+        $this->assertTrue($convenience['hasCategories']);
+        $this->assertTrue($convenience['hasItems']);
+        $this->assertSame('Ask in store', $convenience['items']->firstWhere('slug', 'classic-potato-chips')['display_price']);
+
+        $this->assertTrue($smoothies['hasItems']);
+        $smoothie = $smoothies['items']->firstWhere('slug', 'strawberry-banana-smoothie');
+        $this->assertCount(3, $smoothie['variants']);
+        $this->assertSame('Medium', $smoothie['variants']->firstWhere('is_default', true)['name']);
+        $this->assertSame('Ask in store', $smoothie['display_price']);
+        $this->assertSame(6, CatalogItemVariant::whereHas('item.category', fn ($query) => $query->where('business_area', 'smoothie'))
+            ->where('name', 'Medium')
+            ->where('is_default', true)
+            ->count());
+
+        $this->assertSame(21, $adult['ageRequirement']);
+        $this->assertTrue($adult['items']->every(fn ($item) => $item['is_age_restricted'] && $item['minimum_age'] === 21));
+
+        $payload = json_encode([$convenience, $smoothies, $adult]);
+        $this->assertStringNotContainsString('$0.00', $payload);
+        $this->assertSame(0, MediaAsset::whereNotNull('source_url')->where('source_url', 'like', 'http%')->count());
+    }
+
     private function repairCounts(): array
     {
         return [
@@ -117,6 +172,21 @@ class RepairReferenceSeederTest extends TestCase
             'models' => DeviceModel::count(),
             'services' => RepairService::count(),
             'prices' => RepairServicePrice::count(),
+            'media' => MediaAsset::count(),
+            'attachments' => MediaAttachment::count(),
+        ];
+    }
+
+    private function referenceCounts(): array
+    {
+        return [
+            'brands' => DeviceBrand::count(),
+            'models' => DeviceModel::count(),
+            'services' => RepairService::count(),
+            'prices' => RepairServicePrice::count(),
+            'categories' => CatalogCategory::count(),
+            'items' => CatalogItem::count(),
+            'variants' => CatalogItemVariant::count(),
             'media' => MediaAsset::count(),
             'attachments' => MediaAttachment::count(),
         ];

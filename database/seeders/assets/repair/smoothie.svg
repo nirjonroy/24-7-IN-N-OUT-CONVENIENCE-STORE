@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="640" viewBox="0 0 960 640" role="img" aria-label="Smoothie illustration">
+  <rect width="960" height="640" fill="#f0fdf4"/>
+  <path d="M330 150h300l-54 390H384z" fill="#16a34a"/>
+  <path d="M358 214h244l-38 270H396z" fill="#f9a8d4"/>
+  <path d="M440 150l-38-72M520 150l74-92" stroke="#166534" stroke-width="20" stroke-linecap="round"/>
+  <circle cx="450" cy="300" r="34" fill="#dc2626"/>
+  <circle cx="528" cy="358" r="42" fill="#f59e0b"/>
+</svg>

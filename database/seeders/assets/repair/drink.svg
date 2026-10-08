@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="640" viewBox="0 0 960 640" role="img" aria-label="Cold drink illustration">
+  <rect width="960" height="640" fill="#ecfeff"/>
+  <path d="M320 150h280l-42 390H362z" fill="#0891b2"/>
+  <path d="M350 210h220l-28 260H378z" fill="#cffafe"/>
+  <path d="M400 130h190" stroke="#0e7490" stroke-width="28" stroke-linecap="round"/>
+  <path d="M506 130l46-62" stroke="#0e7490" stroke-width="24" stroke-linecap="round"/>
+</svg>

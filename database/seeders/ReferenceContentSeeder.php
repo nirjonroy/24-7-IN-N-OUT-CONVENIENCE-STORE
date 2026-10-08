@@ -10,6 +10,9 @@ class ReferenceContentSeeder extends Seeder
     {
         $this->call([
             RepairReferenceSeeder::class,
+            ConvenienceStoreReferenceSeeder::class,
+            SmoothieReferenceSeeder::class,
+            AdultRetailReferenceSeeder::class,
             PhoneAccessoryReferenceSeeder::class,
         ]);
     }
