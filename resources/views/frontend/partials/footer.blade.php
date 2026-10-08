@@ -36,9 +36,13 @@
         </div>
     </div>
     <div class="border-t border-slate-200 dark:border-slate-800">
-        <div class="mx-auto flex max-w-7xl flex-col gap-2 px-4 py-5 text-xs text-slate-500 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
-            <span>&copy; {{ now()->year }} {{ $business['short_name'] }}. All rights reserved.</span>
-            <span>{{ $business['adult_notice'] }}</span>
+        <div class="mx-auto grid max-w-7xl gap-2 px-4 py-5 text-xs text-slate-500 sm:grid-cols-3 sm:items-center sm:px-6 lg:px-8">
+            <span class="text-center sm:text-left">&copy; {{ now()->year }} {{ $business['short_name'] }}. All rights reserved.</span>
+            <span class="text-center">
+                Developed by
+                <a href="https://www.blacktechcorp.com/" target="_blank" rel="noopener noreferrer" class="font-semibold text-slate-600 hover:text-red-700 dark:text-slate-300 dark:hover:text-amber-300">BlackTech Corp</a>
+            </span>
+            <span class="text-center sm:text-right">{{ $business['adult_notice'] }}</span>
         </div>
     </div>
 </footer>
