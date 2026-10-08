@@ -17,7 +17,7 @@ class PhoneRepairAdminTest extends TestCase
 
     public function test_device_brand_can_be_created_with_seo_and_media(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['email' => config('admin.email')]);
         $media = $this->media();
 
         $this->actingAs($user)->post(route('admin.phone-repair.brands.store'), $this->brandPayload([
@@ -33,7 +33,7 @@ class PhoneRepairAdminTest extends TestCase
 
     public function test_brand_slug_is_unique_and_brand_with_models_cannot_be_deleted(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['email' => config('admin.email')]);
         $brand = DeviceBrand::create($this->brandData(['slug' => 'apple']));
         DeviceModel::create($this->modelData($brand));
 
@@ -47,7 +47,7 @@ class PhoneRepairAdminTest extends TestCase
 
     public function test_device_model_can_be_created_and_slug_is_scoped_to_brand(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['email' => config('admin.email')]);
         $apple = DeviceBrand::create($this->brandData(['slug' => 'apple']));
         $samsung = DeviceBrand::create($this->brandData(['name' => 'Samsung', 'slug' => 'samsung']));
         DeviceModel::create($this->modelData($apple, ['slug' => 'iphone-15']));
@@ -68,7 +68,7 @@ class PhoneRepairAdminTest extends TestCase
 
     public function test_device_type_validation_and_model_media_gallery(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['email' => config('admin.email')]);
         $brand = DeviceBrand::create($this->brandData());
         $image = $this->media(['title' => 'Device image']);
         $gallery = $this->media(['title' => 'Gallery image']);
@@ -91,7 +91,7 @@ class PhoneRepairAdminTest extends TestCase
 
     public function test_repair_service_can_be_created_and_validates_slug_and_estimated_time(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['email' => config('admin.email')]);
         RepairService::create($this->serviceData(['slug' => 'screen-repair']));
 
         $this->actingAs($user)->post(route('admin.phone-repair.services.store'), $this->servicePayload([
@@ -121,7 +121,7 @@ class PhoneRepairAdminTest extends TestCase
 
     public function test_bulk_pricing_update_and_unique_service_device_combo(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['email' => config('admin.email')]);
         $brand = DeviceBrand::create($this->brandData());
         $model = DeviceModel::create($this->modelData($brand));
         $service = RepairService::create($this->serviceData(['starting_price' => 79, 'warranty_text' => '30 days']));
@@ -158,7 +158,7 @@ class PhoneRepairAdminTest extends TestCase
 
     public function test_only_requested_service_pricing_is_modified_and_filters_work(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['email' => config('admin.email')]);
         $apple = DeviceBrand::create($this->brandData(['slug' => 'apple']));
         $samsung = DeviceBrand::create($this->brandData(['name' => 'Samsung', 'slug' => 'samsung']));
         $iphone = DeviceModel::create($this->modelData($apple, ['name' => 'iPhone 15', 'slug' => 'iphone-15', 'device_type' => 'phone']));
@@ -182,7 +182,7 @@ class PhoneRepairAdminTest extends TestCase
 
     public function test_price_fallback_logic_and_soft_delete(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['email' => config('admin.email')]);
         $brand = DeviceBrand::create($this->brandData());
         $model = DeviceModel::create($this->modelData($brand));
         $service = RepairService::create($this->serviceData(['starting_price' => 79, 'warranty_text' => '30 days']));
@@ -202,7 +202,7 @@ class PhoneRepairAdminTest extends TestCase
 
     public function test_removing_media_attachment_does_not_delete_media_and_unauthorized_users_are_blocked(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['email' => config('admin.email')]);
         $brand = DeviceBrand::create($this->brandData());
         $media = $this->media();
         $brand->mediaAttachments()->create(['media_asset_id' => $media->id, 'collection' => 'logo', 'is_primary' => true]);

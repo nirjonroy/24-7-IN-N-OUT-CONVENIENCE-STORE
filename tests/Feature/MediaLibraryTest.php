@@ -20,7 +20,7 @@ class MediaLibraryTest extends TestCase
     public function test_admin_can_upload_valid_jpg(): void
     {
         Storage::fake('public');
-        $user = User::factory()->create();
+        $user = User::factory()->create(['email' => config('admin.email')]);
 
         $this->actingAs($user)->post(route('admin.media.store'), [
             'file' => UploadedFile::fake()->image('store photo.jpg', 640, 420)->size(200),
@@ -45,7 +45,7 @@ class MediaLibraryTest extends TestCase
     public function test_admin_can_upload_png(): void
     {
         Storage::fake('public');
-        $user = User::factory()->create();
+        $user = User::factory()->create(['email' => config('admin.email')]);
 
         $this->actingAs($user)->post(route('admin.media.store'), [
             'file' => UploadedFile::fake()->image('logo.png', 300, 120)->size(100),
@@ -65,7 +65,7 @@ class MediaLibraryTest extends TestCase
         }
 
         Storage::fake('public');
-        $user = User::factory()->create();
+        $user = User::factory()->create(['email' => config('admin.email')]);
 
         $this->actingAs($user)->post(route('admin.media.store'), [
             'file' => $this->webpUpload(),
@@ -76,7 +76,7 @@ class MediaLibraryTest extends TestCase
 
     public function test_invalid_extension_and_oversized_file_are_rejected(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['email' => config('admin.email')]);
 
         $this->actingAs($user)->post(route('admin.media.store'), [
             'file' => UploadedFile::fake()->create('bad.svg', 10, 'image/svg+xml'),
@@ -89,7 +89,7 @@ class MediaLibraryTest extends TestCase
 
     public function test_media_can_attach_to_page_section_and_item_with_single_replacement(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['email' => config('admin.email')]);
         $firstMedia = $this->media(['title' => 'First']);
         $secondMedia = $this->media(['title' => 'Second']);
 
@@ -127,7 +127,7 @@ class MediaLibraryTest extends TestCase
 
     public function test_business_supports_meta_logo_and_favicon_attachments(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['email' => config('admin.email')]);
         $media = $this->media();
 
         $this->actingAs($user)->post(route('admin.businesses.store'), [
@@ -147,7 +147,7 @@ class MediaLibraryTest extends TestCase
 
     public function test_inactive_media_cannot_be_newly_attached(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['email' => config('admin.email')]);
         $inactive = $this->media(['is_active' => false]);
 
         $this->actingAs($user)->post(route('admin.pages.store'), $this->pagePayload([
@@ -157,7 +157,7 @@ class MediaLibraryTest extends TestCase
 
     public function test_used_media_cannot_be_deleted_but_unused_media_can_be_soft_deleted(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['email' => config('admin.email')]);
         $used = $this->media();
         $unused = $this->media(['title' => 'Unused']);
         $page = Page::create($this->modelPageData());
@@ -180,7 +180,7 @@ class MediaLibraryTest extends TestCase
 
     public function test_media_search_works(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['email' => config('admin.email')]);
         $this->media(['title' => 'Front Counter']);
         $this->media(['title' => 'Back Office']);
 

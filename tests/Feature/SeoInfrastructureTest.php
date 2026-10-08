@@ -30,7 +30,7 @@ class SeoInfrastructureTest extends TestCase
 
     public function test_redirect_can_be_created_and_source_is_normalized(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['email' => config('admin.email')]);
 
         $this->actingAs($user)->post(route('admin.seo.redirects.store'), $this->redirectPayload([
             'source_path' => 'old//phone-repair',
@@ -45,7 +45,7 @@ class SeoInfrastructureTest extends TestCase
 
     public function test_redirect_validation_blocks_self_bad_status_and_dangerous_target(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['email' => config('admin.email')]);
 
         $this->actingAs($user)->post(route('admin.seo.redirects.store'), $this->redirectPayload([
             'source_path' => '/about',
@@ -116,7 +116,7 @@ class SeoInfrastructureTest extends TestCase
 
     public function test_seo_settings_singleton_update_cache_and_media_work(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['email' => config('admin.email')]);
         $media = $this->media();
 
         $this->assertSame(SeoSetting::current()->id, SeoSetting::current()->id);

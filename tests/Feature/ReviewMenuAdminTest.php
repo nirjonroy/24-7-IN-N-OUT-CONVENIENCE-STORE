@@ -17,7 +17,7 @@ class ReviewMenuAdminTest extends TestCase
 
     public function test_review_can_be_created_featured_with_avatar_and_seo(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['email' => config('admin.email')]);
         $avatar = $this->media(['title' => 'Avatar']);
         $meta = $this->media(['title' => 'Meta']);
 
@@ -42,7 +42,7 @@ class ReviewMenuAdminTest extends TestCase
 
     public function test_review_rating_validation_and_filters_work(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['email' => config('admin.email')]);
 
         $this->actingAs($user)->post(route('admin.reviews.store'), $this->reviewPayload(['rating' => '5.1']))
             ->assertSessionHasErrors('rating');
@@ -62,7 +62,7 @@ class ReviewMenuAdminTest extends TestCase
 
     public function test_replacing_review_avatar_preserves_media_and_review_soft_deletes(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['email' => config('admin.email')]);
         $first = $this->media(['title' => 'First']);
         $second = $this->media(['title' => 'Second']);
 
@@ -90,7 +90,7 @@ class ReviewMenuAdminTest extends TestCase
 
     public function test_menu_can_be_created_with_unique_key_location_and_seo(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['email' => config('admin.email')]);
 
         $this->actingAs($user)->post(route('admin.menus.store'), $this->menuPayload([
             'location' => 'header',
@@ -111,7 +111,7 @@ class ReviewMenuAdminTest extends TestCase
 
     public function test_menu_items_support_page_and_custom_links_with_security(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['email' => config('admin.email')]);
         $menu = Menu::create($this->menuData());
         $page = Page::create($this->pageData(['slug' => 'contact']));
 
@@ -145,7 +145,7 @@ class ReviewMenuAdminTest extends TestCase
 
     public function test_menu_parent_rules_depth_cross_menu_and_circular_are_enforced(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['email' => config('admin.email')]);
         $menu = Menu::create($this->menuData());
         $otherMenu = Menu::create($this->menuData(['name' => 'Footer', 'key' => 'footer']));
         $parent = MenuItem::create($this->menuItemData($menu, ['label' => 'Services']));
@@ -180,7 +180,7 @@ class ReviewMenuAdminTest extends TestCase
 
     public function test_menu_ordering_delete_and_page_delete_behavior(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['email' => config('admin.email')]);
         $menu = Menu::create($this->menuData());
         $page = Page::create($this->pageData(['slug' => 'about']));
         $first = MenuItem::create($this->menuItemData($menu, ['label' => 'B', 'sort_order' => 20, 'page_id' => $page->id]));

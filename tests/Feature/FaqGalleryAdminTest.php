@@ -19,7 +19,7 @@ class FaqGalleryAdminTest extends TestCase
 
     public function test_faq_category_can_be_created_with_unique_slug_and_seo(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['email' => config('admin.email')]);
 
         $this->actingAs($user)->post(route('admin.faq.categories.store'), $this->faqCategoryPayload([
             'seo_title' => 'FAQ SEO',
@@ -38,7 +38,7 @@ class FaqGalleryAdminTest extends TestCase
 
     public function test_faq_can_be_created_without_category_and_assigned_to_pages(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['email' => config('admin.email')]);
         $home = Page::create($this->pageData(['slug' => 'home']));
         $contact = Page::create($this->pageData(['name' => 'Contact', 'slug' => 'contact', 'h1' => 'Contact']));
 
@@ -57,7 +57,7 @@ class FaqGalleryAdminTest extends TestCase
 
     public function test_faq_page_sync_and_unique_pivot_work(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['email' => config('admin.email')]);
         $first = Page::create($this->pageData(['slug' => 'first']));
         $second = Page::create($this->pageData(['name' => 'Second', 'slug' => 'second', 'h1' => 'Second']));
 
@@ -80,7 +80,7 @@ class FaqGalleryAdminTest extends TestCase
 
     public function test_faq_filters_and_delete_do_not_delete_pages(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['email' => config('admin.email')]);
         $category = FaqCategory::create($this->faqCategoryData());
         $page = Page::create($this->pageData(['slug' => 'support']));
         $match = Faq::create($this->faqData(['faq_category_id' => $category->id, 'question' => 'Do you sell snacks?', 'is_featured' => true]));
@@ -106,7 +106,7 @@ class FaqGalleryAdminTest extends TestCase
 
     public function test_gallery_category_can_be_created_with_unique_slug_and_seo(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['email' => config('admin.email')]);
 
         $this->actingAs($user)->post(route('admin.gallery.categories.store'), $this->galleryCategoryPayload([
             'seo_title' => 'Gallery SEO',
@@ -125,7 +125,7 @@ class FaqGalleryAdminTest extends TestCase
 
     public function test_gallery_item_requires_image_and_can_store_media_and_seo(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['email' => config('admin.email')]);
         $category = GalleryCategory::create($this->galleryCategoryData());
         $image = $this->media(['title' => 'Image']);
         $meta = $this->media(['title' => 'Meta']);
@@ -152,7 +152,7 @@ class FaqGalleryAdminTest extends TestCase
 
     public function test_gallery_item_media_replacement_and_delete_preserve_media_assets(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['email' => config('admin.email')]);
         $first = $this->media(['title' => 'First']);
         $second = $this->media(['title' => 'Second']);
 
@@ -180,7 +180,7 @@ class FaqGalleryAdminTest extends TestCase
 
     public function test_gallery_filters_and_soft_deleted_category_relation_behave(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['email' => config('admin.email')]);
         $category = GalleryCategory::create($this->galleryCategoryData());
         $match = GalleryItem::create($this->galleryItemData(['gallery_category_id' => $category->id, 'title' => 'Outside Storefront', 'is_featured' => true]));
         GalleryItem::create($this->galleryItemData(['title' => 'Inside Shelves', 'is_featured' => false]));

@@ -16,7 +16,7 @@ class CatalogAdminTest extends TestCase
 
     public function test_category_can_be_created_with_seo_and_media(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['email' => config('admin.email')]);
         $media = $this->media();
 
         $this->actingAs($user)->post(route('admin.catalog.categories.store'), $this->categoryPayload([
@@ -33,7 +33,7 @@ class CatalogAdminTest extends TestCase
 
     public function test_category_slug_is_unique_and_hierarchy_works(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['email' => config('admin.email')]);
         $parent = CatalogCategory::create($this->categoryData(['name' => 'Drinks', 'slug' => 'drinks']));
 
         $this->actingAs($user)->post(route('admin.catalog.categories.store'), $this->categoryPayload([
@@ -53,7 +53,7 @@ class CatalogAdminTest extends TestCase
 
     public function test_category_cannot_parent_itself_or_create_simple_circle(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['email' => config('admin.email')]);
         $a = CatalogCategory::create($this->categoryData(['name' => 'A', 'slug' => 'a']));
         $b = CatalogCategory::create($this->categoryData(['name' => 'B', 'slug' => 'b', 'parent_id' => $a->id]));
 
@@ -72,7 +72,7 @@ class CatalogAdminTest extends TestCase
 
     public function test_catalog_item_can_be_created_and_type_must_match_category_area(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['email' => config('admin.email')]);
         $category = CatalogCategory::create($this->categoryData(['business_area' => 'smoothie']));
 
         $this->actingAs($user)->post(route('admin.catalog.items.store'), $this->itemPayload([
@@ -95,7 +95,7 @@ class CatalogAdminTest extends TestCase
 
     public function test_item_slug_is_unique_and_adult_item_supports_minimum_age(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['email' => config('admin.email')]);
         $adult = CatalogCategory::create($this->categoryData(['name' => 'Adult', 'slug' => 'adult', 'business_area' => 'adult_retail']));
         CatalogItem::create($this->itemData($adult, ['slug' => 'vape-product', 'item_type' => 'adult_product']));
 
@@ -121,7 +121,7 @@ class CatalogAdminTest extends TestCase
 
     public function test_catalog_primary_image_and_gallery_media_work(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['email' => config('admin.email')]);
         $category = CatalogCategory::create($this->categoryData());
         $primary = $this->media(['title' => 'Primary']);
         $galleryA = $this->media(['title' => 'Gallery A']);
@@ -149,7 +149,7 @@ class CatalogAdminTest extends TestCase
 
     public function test_only_one_default_variant_exists_and_wrong_item_route_is_blocked(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['email' => config('admin.email')]);
         $category = CatalogCategory::create($this->categoryData(['business_area' => 'smoothie']));
         $item = CatalogItem::create($this->itemData($category, ['item_type' => 'smoothie']));
         $other = CatalogItem::create($this->itemData($category, ['name' => 'Other', 'slug' => 'other', 'item_type' => 'smoothie']));
@@ -169,7 +169,7 @@ class CatalogAdminTest extends TestCase
 
     public function test_category_cannot_be_deleted_while_items_exist_and_item_soft_deletes(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['email' => config('admin.email')]);
         $category = CatalogCategory::create($this->categoryData());
         $item = CatalogItem::create($this->itemData($category));
 
@@ -185,7 +185,7 @@ class CatalogAdminTest extends TestCase
 
     public function test_item_filters_work(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['email' => config('admin.email')]);
         $smoothie = CatalogCategory::create($this->categoryData(['name' => 'Smoothies', 'slug' => 'smoothies', 'business_area' => 'smoothie']));
         $convenience = CatalogCategory::create($this->categoryData(['name' => 'Snacks', 'slug' => 'snacks']));
         CatalogItem::create($this->itemData($smoothie, ['name' => 'Mango Smoothie', 'slug' => 'mango-smoothie', 'item_type' => 'smoothie', 'is_featured' => true]));

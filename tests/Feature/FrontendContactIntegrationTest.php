@@ -171,7 +171,7 @@ class FrontendContactIntegrationTest extends TestCase
 
         $this->get(route('admin.contacts.index'))->assertRedirect('/login');
 
-        $user = User::factory()->create();
+        $user = User::factory()->create(['email' => config('admin.email')]);
         $html = $this->actingAs($user)->get(route('admin.contacts.show', $contact))
             ->assertOk()
             ->assertSee('&lt;script&gt;alert(1)&lt;/script&gt;', false)

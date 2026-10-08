@@ -53,9 +53,9 @@ class FrontendPublicRoutesTest extends TestCase
         $this->get('/sitemap.xml')->assertOk();
         $this->get('/robots.txt')->assertOk();
 
-        $this->actingAs(User::factory()->create())
+        $this->actingAs(User::factory()->create(['email' => config('admin.email')]))
             ->get('/dashboard')
-            ->assertOk();
+            ->assertRedirect('/admin');
     }
 
     public function test_header_links_use_clean_laravel_urls_and_each_target_resolves(): void

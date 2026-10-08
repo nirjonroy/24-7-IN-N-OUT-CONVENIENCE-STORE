@@ -92,14 +92,14 @@ class FrontendRoutingArchitectureTest extends TestCase
 
     public function test_reserved_slugs_are_blocked_and_generic_route_does_not_intercept_system_routes(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['email' => config('admin.email')]);
 
         $this->actingAs($user)->post(route('admin.pages.store'), $this->pagePayload([
             'name' => 'Admin',
             'slug' => 'admin',
         ]))->assertSessionHasErrors(['slug' => 'This URL slug is reserved by the application.']);
 
-        $this->get('/login')->assertRedirect('/dashboard');
+        $this->get('/login')->assertRedirect('/admin');
         $this->get('/sitemap.xml')->assertOk();
         $this->get('/robots.txt')->assertOk();
         $this->get('/phone-repair')->assertOk();

@@ -71,11 +71,15 @@ Route::get('/gallery', [FrontendGalleryController::class, 'index'])->name('front
 Route::get('/contact', [FrontendContactController::class, 'index'])->name('frontend.contact');
 Route::post('/contact', [FrontendContactController::class, 'store'])->middleware('throttle:5,1')->name('frontend.contact.store');
 
-Route::get('/dashboard', [DashboardController::class, 'index'])
-    ->middleware(['auth', 'verified'])
+Route::get('/admin', [DashboardController::class, 'index'])
+    ->middleware(['auth', 'admin.user', 'verified'])
+    ->name('admin.dashboard');
+
+Route::redirect('/dashboard', '/admin')
+    ->middleware(['auth', 'admin.user', 'verified'])
     ->name('dashboard');
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'admin.user'])->group(function () {
     Route::get('/admin/siteinfo', [SiteinfoController::class, 'edit'])->name('admin.siteinfo.edit');
     Route::post('/admin/siteinfo', [SiteinfoController::class, 'update'])->name('admin.siteinfo.update');
     Route::resource('/admin/sliders', SliderController::class)->names('admin.sliders');

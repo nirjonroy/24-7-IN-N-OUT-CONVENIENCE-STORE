@@ -15,7 +15,7 @@ class CmsAdminTest extends TestCase
 
     public function test_page_can_be_created_with_seo_fields_and_published_timestamp(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['email' => config('admin.email')]);
 
         $this->actingAs($user)->post(route('admin.pages.store'), $this->pagePayload([
             'status' => 'published',
@@ -34,7 +34,7 @@ class CmsAdminTest extends TestCase
 
     public function test_slug_must_be_unique(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['email' => config('admin.email')]);
         Page::create($this->modelPageData(['slug' => 'home']));
 
         $this->actingAs($user)->post(route('admin.pages.store'), $this->pagePayload([
@@ -44,7 +44,7 @@ class CmsAdminTest extends TestCase
 
     public function test_only_one_home_page_exists(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['email' => config('admin.email')]);
         $first = Page::create($this->modelPageData(['slug' => 'home', 'is_home' => true]));
         $second = Page::create($this->modelPageData(['name' => 'About', 'slug' => 'about', 'h1' => 'About Us']));
 
@@ -61,7 +61,7 @@ class CmsAdminTest extends TestCase
 
     public function test_page_can_contain_sections_and_section_key_is_scoped_to_page(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['email' => config('admin.email')]);
         $page = Page::create($this->modelPageData(['slug' => 'home']));
         $otherPage = Page::create($this->modelPageData(['name' => 'About', 'slug' => 'about', 'h1' => 'About Us']));
 
@@ -87,7 +87,7 @@ class CmsAdminTest extends TestCase
 
     public function test_section_cannot_be_accessed_through_wrong_page_route(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['email' => config('admin.email')]);
         $page = Page::create($this->modelPageData(['slug' => 'home']));
         $otherPage = Page::create($this->modelPageData(['name' => 'About', 'slug' => 'about', 'h1' => 'About Us']));
         $section = $page->sections()->create($this->modelSectionData());
@@ -99,7 +99,7 @@ class CmsAdminTest extends TestCase
 
     public function test_section_can_contain_items(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['email' => config('admin.email')]);
         $page = Page::create($this->modelPageData(['slug' => 'home']));
         $section = $page->sections()->create($this->modelSectionData());
 
@@ -118,7 +118,7 @@ class CmsAdminTest extends TestCase
 
     public function test_deleting_page_deletes_sections_and_items(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['email' => config('admin.email')]);
         $page = Page::create($this->modelPageData(['slug' => 'home']));
         $section = $page->sections()->create($this->modelSectionData());
         $item = $section->items()->create($this->modelItemData());
@@ -133,7 +133,7 @@ class CmsAdminTest extends TestCase
 
     public function test_deleting_section_deletes_items(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['email' => config('admin.email')]);
         $page = Page::create($this->modelPageData(['slug' => 'home']));
         $section = $page->sections()->create($this->modelSectionData());
         $item = $section->items()->create($this->modelItemData());
@@ -147,7 +147,7 @@ class CmsAdminTest extends TestCase
 
     public function test_status_validation_rejects_unknown_status(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['email' => config('admin.email')]);
 
         $this->actingAs($user)->post(route('admin.pages.store'), $this->pagePayload([
             'status' => 'archived',
@@ -156,7 +156,7 @@ class CmsAdminTest extends TestCase
 
     public function test_reserved_page_slug_is_rejected(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['email' => config('admin.email')]);
 
         $this->actingAs($user)->post(route('admin.pages.store'), $this->pagePayload([
             'name' => 'Admin',
